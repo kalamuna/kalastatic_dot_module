@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * Implements hook_install.
+ */  
+function kalastatic_install() {
+  // We REALLY want this to run last.
+  db_update('system')
+    ->fields(array('weight' => 9999))
+    ->condition('name', 'kalastatic')
+    ->execute();
+}
