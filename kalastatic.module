@@ -10,7 +10,7 @@ function kalastatic_menu() {
     'title' => 'Drupal CSS',
     'description' => 'Return an array of information about the css being added to the page',
     'page callback' => 'kalastatic_asset_json',
-    'page arguments' => array('css'),
+    'page arguments' => array('css', 2),
     'access arguments' => array('access content'),
   );
 
@@ -18,7 +18,15 @@ function kalastatic_menu() {
     'title' => 'Drupal Javascript',
     'description' => 'Return an array of information about the js being added to the page',
     'page callback' => 'kalastatic_asset_json',
-    'page arguments' => array('js'),
+    'page arguments' => array('js', 2),
+    'access arguments' => array('access content'),
+  );
+
+  $items['kalastatic/drupal-assets'] = array(
+    'title' => 'Drupal Assets',
+    'description' => 'A page containing the rendered output of the css and js.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('kalastatic_assets_form'),
     'access arguments' => array('access content'),
   );
   
@@ -31,13 +39,39 @@ function kalastatic_menu() {
 function kalastatic_asset_json($type){
   switch ($type){
     case 'css':
-      $assets = drupal_add_css();
+      $output = drupal_get_css();
       break;  
     
     case 'js':
-      $assets = drupal_add_js();
+      $output = drupal_get_js();
       break;
   }
+    
+  return $output;
+}
+
+/**
+ * Build a form containing the css and js in textareas so it can be copied and 
+ * pasted.
+ */
+function kalastatic_assets_form($form, &$form_state){
+  $css = kalastatic_asset_json('css');
+  $js = kalastatic_asset_json('js');
   
-  return drupal_json_output($assets);
+  $form['description'] = array(
+    '#markup' => 'Copy and paste the following markup into your html.html template to add the Drupal CSS and Javascript to Kalastatic.',
+  );
+  
+  $form['css'] = array(
+    '#title' => 'Drupal CSS',
+    '#type' => 'textarea',
+    '#default_value' => $css,
+  );
+  $form['js'] = array(        
+    '#title' => 'Drupal Javascript',
+    '#type' => 'textarea',
+    '#default_value' => $js,
+  );
+  
+  return $form;
 }
