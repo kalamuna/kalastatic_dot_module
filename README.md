@@ -1,2 +1,2 @@
-# kalatstic_dot_module
+# kalastatic_dot_module
 Drupal integration module for the Kalastatic prototyping and styleguide tool
