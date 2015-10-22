@@ -6,6 +6,48 @@
 function kalastatic_menu() {
   $items = array();
 
+  $items['kalastatic'] = array(
+    'title' => 'Kalastatic',
+    'description' => 'Kalastatic config page.',
+    'page callback' => 'kalastatic_config_page',
+    'access arguments' => array('access content'), // TODO: We need better perms to keep anon 
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['kalastatic/about'] = array(
+    'title' => 'About',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0
+  );
+
+  $items['kalastatic/drupal-assets'] = array(
+    'title' => 'Drupal Assets',
+    'description' => 'A page containing the rendered output of the css and js.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('kalastatic_assets_form'),
+    'access arguments' => array('access content'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 1,
+  );
+
+  $items['kalastatic/prototype'] = array(
+    'title' => 'Prototype',
+    'description' => 'The prototype that lives inside Kalastatic',
+    'page callback' => 'kalastatic_prototype_redirect',
+    'access arguments' => array('access content'), // TODO: We need better perms to keep anon out of here.
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+  );
+
+  $items['kalastatic/styleguide'] = array(
+    'title' => 'Styleguide',
+    'description' => 'The styleguide that lives inside Kalastatic',
+    'page callback' => 'kalastatic_styleguide_redirect',
+    'access arguments' => array('access content'), // TODO: We need better perms to keep anon out of here.
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 3,
+  );
+  
   $items['kalastatic/drupal-css'] = array(
     'title' => 'Drupal CSS',
     'description' => 'Return an array of information about the css being added to the page',
@@ -22,15 +64,26 @@ function kalastatic_menu() {
     'access arguments' => array('access content'),
   );
 
-  $items['kalastatic/drupal-assets'] = array(
-    'title' => 'Drupal Assets',
-    'description' => 'A page containing the rendered output of the css and js.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('kalastatic_assets_form'),
-    'access arguments' => array('access content'),
+  return $items;
+}
+
+/**
+ * 
+ */
+function kalastatic_config_page(){
+  $features_list = array(
+    'Metalsmith static site generator',
+    'Swig template engine',
+    'SASS CSS pre-processor',
+    'KSS CSS Documentation and Styleguide',
+    'Grunt for automating tasks',
   );
   
-  return $items;
+  return array(
+    'description' =>  array(
+      '#markup' => t('Static site framework for prototyping and building out CMS-less websites. See !link for more details.', array('!link' => l('https://github.com/kalamuna/kalastatic', 'https://github.com/kalamuna/kalastatic'))),
+    ),
+  );
 }
 
 /**
@@ -74,4 +127,22 @@ function kalastatic_assets_form($form, &$form_state){
   );
   
   return $form;
+}
+
+/**
+ * Page callback that just redirects to the prototype.
+ */
+function kalastatic_prototype_redirect(){
+  // TODO: We need a better way to find out where KS is living.
+  $path = 'sites/all/themes/kt_sub/kalastatic/build/index.html';
+  drupal_goto($path);
+}
+
+/**
+ * Page callback that just redirects to the styleguide.
+ */
+function kalastatic_styleguide_redirect(){
+  // TODO: We need a better way to find out where KS is living.
+  $path = 'sites/all/themes/kt_sub/kalastatic/build/styleguide';
+  drupal_goto($path);
 }
