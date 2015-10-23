@@ -10,7 +10,7 @@ function kalastatic_menu() {
     'title' => 'Kalastatic',
     'description' => 'Kalastatic config page.',
     'page callback' => 'kalastatic_config_page',
-    'access arguments' => array('access content'), // TODO: We need better perms to keep anon 
+    'access arguments' => array('configure kalastatic'),
     'type' => MENU_NORMAL_ITEM,
   );
 
@@ -34,7 +34,7 @@ function kalastatic_menu() {
     'title' => 'Prototype',
     'description' => 'The prototype that lives inside Kalastatic',
     'page callback' => 'kalastatic_prototype_redirect',
-    'access arguments' => array('access content'), // TODO: We need better perms to keep anon out of here.
+    'access arguments' => array('view kalastatic prototype'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 2,
   );
@@ -43,7 +43,7 @@ function kalastatic_menu() {
     'title' => 'Styleguide',
     'description' => 'The styleguide that lives inside Kalastatic',
     'page callback' => 'kalastatic_styleguide_redirect',
-    'access arguments' => array('access content'), // TODO: We need better perms to keep anon out of here.
+    'access arguments' => array('view kalastatic styleguide'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 3,
   );
@@ -68,7 +68,27 @@ function kalastatic_menu() {
 }
 
 /**
- * 
+ * Implements hook_permission.
+ */
+function kalastatic_permission() {
+  return array(
+    'configure kalastatic' => array(
+      'title' => t('Configure Kalastatic'),
+      'description' => t('Access configuration pages provided by the Kalastatic Drupal integration module.'),
+    ),
+    'view kalastatic prototype' => array(
+      'title' => t('View Kalastatic prototype'),
+      'description' => t('View the prototype provided by Kalastatic.'),
+    ),
+    'view kalastatic styleguide' => array(
+      'title' => t('View Kalastatic styleguide'),
+      'description' => t('View the styleguide provided by Kalastatic.'),
+    ),
+  );
+}
+
+/**
+ * Page callback for the Kalastatic config page.
  */
 function kalastatic_config_page(){
   $features_list = array(
