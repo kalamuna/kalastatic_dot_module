@@ -54,6 +54,7 @@ function kalastatic_menu() {
     'page callback' => 'kalastatic_asset_json',
     'page arguments' => array('css', 2),
     'access arguments' => array('access content'),
+    'delivery callback' => 'ajax_deliver',
   );
 
   $items['kalastatic/drupal-js'] = array(
@@ -62,6 +63,7 @@ function kalastatic_menu() {
     'page callback' => 'kalastatic_asset_json',
     'page arguments' => array('js', 2),
     'access arguments' => array('access content'),
+    'delivery callback' => 'ajax_deliver',
   );
 
   return $items;
