@@ -54,7 +54,7 @@ function kalastatic_menu() {
     'page callback' => 'kalastatic_asset_json',
     'page arguments' => array('css', 2),
     'access arguments' => array('access content'),
-    'delivery callback' => 'ajax_deliver',
+    'delivery callback' => 'kalastatic_asset_deliver',
   );
 
   $items['kalastatic/drupal-js'] = array(
@@ -63,7 +63,7 @@ function kalastatic_menu() {
     'page callback' => 'kalastatic_asset_json',
     'page arguments' => array('js', 2),
     'access arguments' => array('access content'),
-    'delivery callback' => 'ajax_deliver',
+    'delivery callback' => 'kalastatic_asset_deliver',
   );
 
   return $items;
@@ -124,6 +124,20 @@ function kalastatic_asset_json($type){
     
   return $output;
 }
+
+/**
+ * Delivery callback for returning Drupal css or js.
+ */
+function kalastatic_asset_deliver($assets){
+  drupal_add_http_header('Content-Type', 'application/json; charset=utf-8');
+
+  // Print the response.
+  print $assets;
+
+  // Perform end-of-request tasks.
+  ajax_footer();
+}
+
 
 /**
  * Build a form containing the css and js in textareas so it can be copied and 
