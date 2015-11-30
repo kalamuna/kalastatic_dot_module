@@ -9,7 +9,8 @@ function kalastatic_menu() {
   $items['kalastatic'] = array(
     'title' => 'Kalastatic',
     'description' => 'Kalastatic config page.',
-    'page callback' => 'kalastatic_config_page',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('kalastatic_config_page'),
     'access arguments' => array('configure kalastatic'),
     'type' => MENU_NORMAL_ITEM,
   );
@@ -109,11 +110,26 @@ function kalastatic_config_page(){
     'Grunt for automating tasks',
   );
   
-  return array(
+  $form = array(
     'description' =>  array(
-      '#markup' => t('Static site framework for prototyping and building out CMS-less websites. See !link for more details.', array('!link' => l('https://github.com/kalamuna/kalastatic', 'https://github.com/kalamuna/kalastatic'))),
+      '#markup' => '<p>' . t('Static site framework for prototyping and building out CMS-less websites. See !link for more details.', array('!link' => l('https://github.com/kalamuna/kalastatic', 'https://github.com/kalamuna/kalastatic'))) . '</p>',
     ),
+    'kalastatic_file_path_wrap' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Path to Kalastatic'), 
+      '#collapsible' => FALSE, 
+      '#collapsed' => FALSE,      
+      'kalastatic_file_path' => array(
+        '#type' => 'textfield', 
+        '#title' => t('Path'), 
+        '#default_value' => variable_get('kalastatic_file_path'), 
+        '#size' => 60, 
+        '#description' => t('Provide the path to Kalastatic, relative to Drupal root. If no path is supplied then it will be assumed that Kalastatic is inside a folder called \'kalastatic\' in the root of the currently enabled theme.'),
+      )
+    )
   );
+  
+  return system_settings_form($form);
 }
 
 /**
@@ -244,11 +260,20 @@ function kalastatic_deliver_static_page($page_callback_result) {
 }
 
 /**
+ * Return the path to the default path to Kalastatic.
+ */
+function kalastatic_path_to_kalastatic_default(){
+  return path_to_theme() . '/kalastatic';
+}
+
+/**
  * Return the path to the Kalastatic project relative to the site root.
  */
 function kalastatic_path_to_kalastatic(){
-  // @todo we need a better way to work our where kalastatic is living.
-  return 'sites/all/themes/kt_sub/kalastatic';
+  // If the path variable is set then use that, otherwise assume a default
+  // inside the current theme.
+  $path = variable_get('kalastatic_file_path');
+  return $path ? $path : kalastatic_path_to_kalastatic_default();
 }
 
 /**
