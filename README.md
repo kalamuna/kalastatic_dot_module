@@ -1,4 +1,4 @@
-kalastatic_dot_module
+Kalastatic module
 =====================
 
 
