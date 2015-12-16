@@ -10,7 +10,8 @@ with Drupal.
 
 [Kalastatic](https://github.com/kalamuna/kalastatic) is a static site framework 
 for prototyping, style-guiding and building out CMS-less websites. 
-More information can be found on the [Kalastatic wiki](https://github.com/kalamuna/kalastatic/wiki).
+More information can be found on the 
+[Kalastatic wiki](https://github.com/kalamuna/kalastatic/wiki).
 
 
 WHY THIS MODULE
@@ -30,7 +31,8 @@ centralizing maintenance.
 FEATURES
 --------
 
- * provides pretty paths at ``/kalastatic/styleguide`` and ``/kalastatic/prototype``
+ * provides pretty paths at ``/kalastatic/styleguide`` and 
+ ``/kalastatic/prototype``
  * permissions for viewing the styleguide and protoype
  * a configurable path to Kalastatic resources
  * provides Drupal CSS and JS that can be shared back to the prototype
@@ -45,7 +47,8 @@ REQUIREMENTS
 ------------
 
 In theory, none.
-In practice, this modules does nothing without [Kalastatic](https://github.com/kalamuna/kalastatic), 
+In practice, this modules does nothing without 
+[Kalastatic](https://github.com/kalamuna/kalastatic), 
 which we recommend residing inside your subtheme. We of course recommend 
 [Kalatheme](https://www.drupal.org/project/kalatheme) as a base theme.
 
