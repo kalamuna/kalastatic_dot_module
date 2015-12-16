@@ -102,14 +102,6 @@ function kalastatic_permission() {
  * Page callback for the Kalastatic config page.
  */
 function kalastatic_config_page(){
-  $features_list = array(
-    'Metalsmith static site generator',
-    'Swig template engine',
-    'SASS CSS pre-processor',
-    'KSS CSS Documentation and Styleguide',
-    'Grunt for automating tasks',
-  );
-  
   $form = array(
     'description' =>  array(
       '#markup' => '<p>' . t('Static site framework for prototyping and building out CMS-less websites. See !link for more details.', array('!link' => l('https://github.com/kalamuna/kalastatic', 'https://github.com/kalamuna/kalastatic'))) . '</p>',
