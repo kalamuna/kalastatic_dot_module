@@ -101,15 +101,15 @@ function kalastatic_permission() {
       'description' => t('View the styleguide provided by Kalastatic.'),
     ),
   );
-} 
+}
 
 /**
  * Page callback for the Kalastatic config page.
  */
-function kalastatic_config_page(){
+function kalastatic_config_page() {
   $github_link = 'https://github.com/kalamuna/kalastatic';
   $form = array(
-    'description' =>  array(
+    'description' => array(
       '#markup' => '<p>' . t('Static site framework for prototyping and building out CMS-less websites. See !link for more details.', array('!link' => l($github_link, $github_link))) . '</p>',
     ),
     'kalastatic_file_path_wrap' => array(
@@ -123,7 +123,7 @@ function kalastatic_config_page(){
         '#default_value' => variable_get('kalastatic_file_path'),
         '#size' => 60,
         '#description' => t("Provide the path to Kalastatic, relative to Drupal root. If no path is supplied then it will be assumed that Kalastatic is inside a folder called 'kalastatic' in the root of the currently enabled theme."),
-      )
+      ),
     ),
   );
 
@@ -133,8 +133,8 @@ function kalastatic_config_page(){
 /**
  * Return either css or js markup that is being added to any given Drupal page.
  */
-function kalastatic_get_drupal_asset($type){
-  switch ($type){
+function kalastatic_get_drupal_asset($type) {
+  switch ($type) {
     case 'css':
       $output = drupal_get_css();
       break;
@@ -150,7 +150,7 @@ function kalastatic_get_drupal_asset($type){
 /**
  * Delivery callback for returning Drupal css or js.
  */
-function kalastatic_asset_deliver($assets){
+function kalastatic_asset_deliver($assets) {
   drupal_add_http_header('Content-Type', 'application/json; charset=utf-8');
 
   // Print the response.
@@ -162,10 +162,9 @@ function kalastatic_asset_deliver($assets){
 
 
 /**
- * Build a form containing the css and js in textareas so it can be copied and
- * pasted.
+ * Build a form containing the css and js in textareas so it can be copy pasted.
  */
-function kalastatic_assets_form($form, &$form_state){
+function kalastatic_assets_form($form, &$form_state) {
   $css = kalastatic_get_drupal_asset('css');
   $js = kalastatic_get_drupal_asset('js');
 
@@ -188,12 +187,12 @@ function kalastatic_assets_form($form, &$form_state){
 }
 
 /**
- * Return the requested file/page from within the prototype/styleguide. 
+ * Return the requested file/page from within the prototype/styleguide.
  *
- * If it's something other than an html file (css, js, image) then we need to 
+ * If it's something other than an html file (css, js, image) then we need to
  * set the headers as well.
  */
-function kalastatic_serve_ks_files(){
+function kalastatic_serve_ks_files() {
   $args = arg();
 
   $path = 'index.html';
@@ -261,14 +260,14 @@ function kalastatic_deliver_static_page($page_callback_result) {
 /**
  * Return the path to the default path to Kalastatic.
  */
-function kalastatic_path_to_kalastatic_default(){
+function kalastatic_path_to_kalastatic_default() {
   return path_to_theme() . '/kalastatic';
 }
 
 /**
  * Return the path to the Kalastatic project relative to the site root.
  */
-function kalastatic_path_to_kalastatic(){
+function kalastatic_path_to_kalastatic() {
   // If the path variable is set then use that, otherwise assume a default
   // inside the current theme.
   $path = variable_get('kalastatic_file_path');
@@ -278,7 +277,6 @@ function kalastatic_path_to_kalastatic(){
 /**
  * Return the path to the built prototype relative to the site root.
  */
-function kalastatic_path_to_kalastatic_html(){
+function kalastatic_path_to_kalastatic_html() {
   return kalastatic_path_to_kalastatic() . '/build';
 }
-
