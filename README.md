@@ -81,6 +81,13 @@ CONFIGURATION
      /kalastatic/styleguide. But why hide the beauty? Let everyone see it!
 
 
+UPGRADING
+----------
+
+See the following for documentation upgrading Kalastatic: 
+https://github.com/kalamuna/kalastatic/wiki/Upgrading-an-existing-Kalastatic-Kalatheme-installation
+
+
 MAINTAINERS
 ------------
 
