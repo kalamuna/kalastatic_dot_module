@@ -46,12 +46,14 @@ function kalastatic_menu() {
     'delivery callback' => 'kalastatic_deliver_static_page',
   );
 
-  // Menu callback for styleguide. Note that this just does a drupal_goto to
-  // redirect to the proper url for the styleguide. If we implemented a callback
-  // for 'kalastatic/prototype/styleguide' that was of type MENU_LOCAL_TASK then
-  // Drupal would assume that the local task was to appear on
-  // kalastatic/prototype which of course isn't a Drupal page. This way we can
-  // have the style guide link on /kalastatic and everyone nguyens.
+  /** 
+   * Menu callback for styleguide. Note that this just does a drupal_goto to
+   * redirect to the proper url for the styleguide. If we implemented a callback
+   * for 'kalastatic/prototype/styleguide' that was of type MENU_LOCAL_TASK then
+   * Drupal would assume that the local task was to appear on
+   * kalastatic/prototype which of course isn't a Drupal page. This way we can
+   * have the style guide link on /kalastatic and everyone nguyens.
+   */
   $items['kalastatic/styleguide'] = array(
     'title' => 'Styleguide',
     'description' => 'The styleguide that lives inside Kalastatic',
