@@ -84,8 +84,7 @@ CONFIGURATION
 UPGRADING
 ----------
 
-See the following for documentation upgrading Kalastatic: 
-https://github.com/kalamuna/kalastatic/wiki/Upgrading-an-existing-Kalastatic-Kalatheme-installation
+Visit the [KalaStatic upgrade documentation](https://git.io/vzHdN).
 
 
 MAINTAINERS
