@@ -11,7 +11,7 @@
 function kalastatic_menu() {
   $items = array();
 
-  $items['kalastatic'] = array(
+  $items['admin/config/kalastatic'] = array(
     'title' => 'Kalastatic',
     'description' => 'Kalastatic config page.',
     'page callback' => 'drupal_get_form',
@@ -20,13 +20,13 @@ function kalastatic_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
 
-  $items['kalastatic/about'] = array(
+  $items['admin/config/kalastatic/about'] = array(
     'title' => 'About',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 0,
   );
 
-  $items['kalastatic/drupal-assets'] = array(
+  $items['admin/config/kalastatic/drupal-assets'] = array(
     'title' => 'Drupal Assets',
     'description' => 'A page containing the rendered output of the css and js.',
     'page callback' => 'drupal_get_form',
@@ -37,11 +37,10 @@ function kalastatic_menu() {
   );
 
   $items['kalastatic/prototype'] = array(
-    'title' => 'Prototype',
+    'title' => 'Visit Prototype',
     'description' => 'The prototype that lives inside Kalastatic',
     'page callback' => 'kalastatic_serve_ks_files',
     'access arguments' => array('view kalastatic prototype'),
-    'type' => MENU_LOCAL_TASK,
     'weight' => 2,
     'delivery callback' => 'kalastatic_deliver_static_page',
   );
@@ -55,12 +54,11 @@ function kalastatic_menu() {
    * have the style guide link on /kalastatic and everyone nguyens.
    */
   $items['kalastatic/styleguide'] = array(
-    'title' => 'Styleguide',
+    'title' => 'Visit Styleguide',
     'description' => 'The styleguide that lives inside Kalastatic',
     'page callback' => 'drupal_goto',
     'page arguments' => array('kalastatic/prototype/styleguide/'),
     'access arguments' => array('view kalastatic styleguide'),
-    'type' => MENU_LOCAL_TASK,
     'weight' => 3,
   );
 
@@ -103,6 +101,29 @@ function kalastatic_permission() {
       'description' => t('View the styleguide provided by Kalastatic.'),
     ),
   );
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function kalastatic_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  // Add action link to 'node/add' on 'admin/content' page.
+  if ($root_path == 'admin/config/kalastatic') {
+    $prototype = menu_get_item('kalastatic/prototype');
+    if ($prototype['access']) {
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $prototype,
+      );
+    }
+    $styleguide = menu_get_item('kalastatic/styleguide');
+    if ($styleguide['access']) {
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $styleguide,
+      );
+    }
+  }
 }
 
 /**
