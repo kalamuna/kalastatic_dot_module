@@ -176,6 +176,9 @@ function kalastatic_get_drupal_asset($type) {
 function kalastatic_asset_deliver($assets) {
   drupal_add_http_header('Content-Type', 'application/json; charset=utf-8');
 
+  // Allow embedding the assets across different domains.
+  drupal_add_http_header('Access-Control-Allow-Origin', '*');
+
   // Print the response.
   print $assets;
 
