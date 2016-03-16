@@ -253,7 +253,6 @@ function kalastatic_serve_ks_files() {
     $mime_type = file_get_mimetype($file);
     drupal_add_http_header('Content-Type', $mime_type);
   }
-xdebug_break();
   if (file_exists($file)) {
     $file_contents = file_get_contents($file);
     // We have a file to serve so let's do it!
