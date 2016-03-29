@@ -157,12 +157,15 @@ function kalastatic_config_page() {
  * Return either css or js markup that is being added to any given Drupal page.
  */
 function kalastatic_get_drupal_asset($type) {
+  global $conf;
   switch ($type) {
     case 'css':
+      $conf['preprocess_css'] = FALSE;
       $output = drupal_get_css();
       break;
 
     case 'js':
+      $conf['preprocess_js'] = FALSE;
       $output = drupal_get_js();
       break;
   }
