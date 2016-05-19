@@ -45,7 +45,7 @@ function kalastatic_menu() {
     'delivery callback' => 'kalastatic_deliver_static_page',
   );
 
-  /**
+  /*
    * Menu callback for styleguide. Note that this just does a drupal_goto to
    * redirect to the proper url for the styleguide. If we implemented a callback
    * for 'kalastatic/prototype/styleguide' that was of type MENU_LOCAL_TASK then
@@ -261,11 +261,11 @@ function kalastatic_serve_ks_files() {
     // We have a file to serve so let's do it!
     return $file_contents;
   }
-  else if((isset($args[1]) && $args[1] == 'prototype') || (isset($args[2]) && $args[2] == 'styleguide')) {
+  elseif ((isset($args[1]) && $args[1] == 'prototype') || (isset($args[2]) && $args[2] == 'styleguide')) {
     // Kalastatic isn't were it's supposed to be so output a nice message.
     $replacements = array(
       '!path' => '<code>' . kalastatic_path_to_kalastatic() . '</code>',
-      '!link' => l('About page', 'kalastatic')
+      '!link' => l(t('About page'), 'kalastatic')
     );
     $page = array(
       '#markup' => '<h2>' . t('Kalastatic could not be found!') . '</h2><p>' . t('We were looking in !path but it wasn\'t there. If Kalastatic is living somewhere else you can set the location on the !link.', $replacements) . '</p>',
