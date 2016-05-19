@@ -265,10 +265,10 @@ function kalastatic_serve_ks_files() {
     // Kalastatic isn't were it's supposed to be so output a nice message.
     $replacements = array(
       '!path' => '<code>' . kalastatic_path_to_kalastatic() . '</code>',
-      '!link' => l(t('About page'), 'kalastatic')
+      '!link' => l(t('About page'), 'kalastatic'),
     );
     $page = array(
-      '#markup' => '<h2>' . t('Kalastatic could not be found!') . '</h2><p>' . t('We were looking in !path but it wasn\'t there. If Kalastatic is living somewhere else you can set the location on the !link.', $replacements) . '</p>',
+      '#markup' => '<h2>' . t('Kalastatic could not be found!') . '</h2><p>' . t("We were looking in !path but it wasn't there. If Kalastatic is living somewhere else you can set the location on the !link.", $replacements) . '</p>',
     );
 
     return drupal_deliver_html_page($page);
