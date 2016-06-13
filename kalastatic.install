@@ -15,7 +15,7 @@ function kalastatic_install() {
     ->condition('name', 'kalastatic')
     ->execute();
 
-  // Anonymous and authenticated users get access to the prototype/ styleguide.
+  // Anonymous and authenticated users get access to the prototype/styleguide.
   $roles = array(
     DRUPAL_ANONYMOUS_RID,
     DRUPAL_AUTHENTICATED_RID
