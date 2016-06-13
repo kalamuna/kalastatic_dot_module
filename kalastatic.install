@@ -14,4 +14,16 @@ function kalastatic_install() {
     ->fields(array('weight' => 9999))
     ->condition('name', 'kalastatic')
     ->execute();
+
+  // Anonymous and authenticated users get access to the prototype/ styleguide.
+  $roles = array(
+    DRUPAL_ANONYMOUS_RID,
+    DRUPAL_AUTHENTICATED_RID
+  );
+  foreach ($roles as $role) {
+    user_role_grant_permissions($role, array(
+      'view kalastatic styleguide',
+      'view kalastatic prototype',
+    ));
+  }
 }
