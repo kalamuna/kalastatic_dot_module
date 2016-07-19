@@ -57,7 +57,7 @@ function kalastatic_menu() {
     'title' => 'Visit Styleguide',
     'description' => 'The styleguide that lives inside Kalastatic',
     'page callback' => 'drupal_goto',
-    'page arguments' => array('kalastatic/prototype/styleguide/'),
+    'page arguments' => array('kalastatic/prototype/styleguide/index.html'),
     'access arguments' => array('view kalastatic styleguide'),
     'weight' => 3,
   );
@@ -247,6 +247,10 @@ function kalastatic_serve_ks_files() {
     unset($args[0]);
     unset($args[1]);
     $path = implode('/', $args) . $suffix;
+  }
+  else {
+    // There isn't a requested page, so redirect the user to index.html homepage.
+    drupal_goto('kalastatic/prototype/index.html');
   }
 
   $file = kalastatic_path_to_kalastatic_html() . '/' . $path;
