@@ -234,6 +234,11 @@ function kalastatic_serve_ks_files() {
     $last_arg = end($args);
     preg_match('/\.[^\.]+$/i', $last_arg, $ext);
 
+    // When on kalastatic/prototype/styleguide, we want to force the user's browser to have an index.html.
+    if ($last_arg == 'styleguide') {
+      drupal_goto('kalastatic/prototype/styleguide/index.html');
+    }
+
     if (isset($ext[0])) {
       // This is a file so we need to add headers for it's mime type before we
       // return the file.
