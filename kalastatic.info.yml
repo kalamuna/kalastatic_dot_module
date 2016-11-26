@@ -1,0 +1,10 @@
+name: Kalastatic
+description: Drupal integration module for the Kalastatic prototyping and styleguide tool.
+package: Kalastatic
+
+type: module
+core: 8.x
+
+dependencies:
+
+configure: kalastatic.settings
