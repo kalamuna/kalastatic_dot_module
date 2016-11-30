@@ -1,0 +1,7 @@
+kalastatic.content:
+  path: '/admin/config/kalastatic'
+  defaults:
+    _controller: '\Drupal\kalastatic\Controller\KalastaticAdmin::content'
+    _title: 'Kalastatic'
+  requirements:
+    _permission: 'access content'
