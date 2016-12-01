@@ -1,0 +1,9 @@
+kalastatic.settings:
+  title: 'Kalastatic settings'
+  route_name: kalastatic.settings
+  base_name: kalastatic.settings
+
+kalastatic.assets:
+  title: 'Kalastatic assets'
+  route_name: kalastatic.assets
+  base_name: kalastatic.settings
