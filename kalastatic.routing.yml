@@ -5,3 +5,25 @@ kalastatic.content:
     _title: 'Kalastatic'
   requirements:
     _permission: 'access content'
+
+kalastatic.prototype:
+  path: '/kalastatic/prototype'
+  defaults:
+    _controller: '\Drupal\kalastatic\Controller\KalastaticServer::content'
+    _title: 'Kalastatic Prototype'
+    type: prototype
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    no_cache: TRUE
+
+kalastatic.styleguide:
+  path: '/kalastatic/styleguide'
+  defaults:
+    _controller: '\Drupal\kalastatic\Controller\KalastaticServer::content'
+    _title: 'Kalastatic Styleguide'
+    type: styleguide
+  requirements:
+    _permission: 'administer site configuration'
+  options: 
+    no_cache: TRUE
