@@ -6,7 +6,7 @@ kalastatic.settings:
     _permission: 'administer site configuration'
 
 kalastatic.prototype:
-  path: '/kalastatic/prototype'
+  path: '/kalastatic/prototype/{path}'
   defaults:
     _controller: '\Drupal\kalastatic\Controller\KalastaticServer::content'
     _title: 'Kalastatic Prototype'
@@ -17,7 +17,7 @@ kalastatic.prototype:
     no_cache: TRUE
 
 kalastatic.styleguide:
-  path: '/kalastatic/styleguide'
+  path: '/kalastatic/styleguide/{path}'
   defaults:
     _controller: '\Drupal\kalastatic\Controller\KalastaticServer::content'
     _title: 'Kalastatic Styleguide'
