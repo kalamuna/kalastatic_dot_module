@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function kalastatic_install() {
+  // Set default values for config which require dynamic values.
+  \Drupal::configFactory()->getEditable('kalastatic.settings')
+    ->set('kalastatic_file_path', kalastatic_path_to_kalastatic_default())
+    ->save();
+}

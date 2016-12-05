@@ -1,0 +1,10 @@
+<?php
+
+/**
+ * Return the path to the default path to Kalastatic.
+ * The assumption is that it is inside a folder called 'kalastatic' in the
+ * current default theme.
+ */
+function kalastatic_path_to_kalastatic_default() {
+  return \Drupal::config('system.theme')->get('default') . '/kalastatic';
+}
