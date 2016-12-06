@@ -6,5 +6,6 @@
  * current default theme.
  */
 function kalastatic_path_to_kalastatic_default() {
-  return \Drupal::config('system.theme')->get('default') . '/kalastatic';
+  $default_theme = \Drupal::config('system.theme')->get('default');
+  return drupal_get_path('theme', $default_theme) . '/kalastatic';
 }
