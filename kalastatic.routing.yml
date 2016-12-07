@@ -1,13 +1,28 @@
-kalastatic.content:
-  path: '/admin/config/kalastatic/blah'
-  defaults:
-    _controller: '\Drupal\kalastatic\Controller\KalastaticAdmin::content'
-    _title: 'Kalastatic'
-  requirements:
-    _permission: 'access content'
 kalastatic.settings:
   path: '/admin/config/kalastatic'
   defaults:
     _form: '\Drupal\kalastatic\Form\KalastaticSettingsForm'
   requirements:
     _permission: 'administer site configuration'
+
+kalastatic.prototype:
+  path: '/kalastatic/prototype/{path}'
+  defaults:
+    _controller: '\Drupal\kalastatic\Controller\KalastaticServer::content'
+    _title: 'Kalastatic Prototype'
+    type: prototype
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    no_cache: TRUE
+
+kalastatic.styleguide:
+  path: '/kalastatic/styleguide/{path}'
+  defaults:
+    _controller: '\Drupal\kalastatic\Controller\KalastaticServer::content'
+    _title: 'Kalastatic Styleguide'
+    type: styleguide
+  requirements:
+    _permission: 'administer site configuration'
+  options:
+    no_cache: TRUE
