@@ -12,12 +12,10 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class KalastaticServer extends ControllerBase {
   public function content($type) {
-    // TODO: work out how we can load the html files. We need to acheive what
-    // kalastatic_serve_ks_files() is doing from the D7 version.
-
     // Get the path and split it up into an array.
     $path = \Drupal::request()->getpathInfo();
     $args = explode('/', $path);
@@ -69,6 +67,12 @@ class KalastaticServer extends ControllerBase {
       $file_contents = file_get_contents($file);
       // We have a file to serve so let's do it!
       return new HtmlResponse($file_contents);
+    }
+    elseif (file_exists($this->getBuildPath() . '/index.html')){
+      // Kalastatic seems to exist but the page that was requested doesn't so
+      // let's throw a Drupal 404.
+      drupal_set_message(t('The requested page could not be found inside Kalastatic'), 'error');
+      throw new NotFoundHttpException();
     }
     elseif ((isset($args[1]) && $args[1] == 'prototype') || (isset($args[2]) && $args[2] == 'styleguide')) {
       // Kalastatic isn't where it's supposed to be so output a nice message.
