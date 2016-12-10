@@ -17,76 +17,25 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class KalastaticServer extends ControllerBase {
   public function content($type) {
     // Get the path and split it up into an array.
-    $path = \Drupal::request()->getpathInfo();
+    $path = rtrim(\Drupal::request()->getpathInfo(), '/');
     $args = explode('/', $path);
     array_shift($args);
 
-    $path = 'index.html';
-    $needs_headers = FALSE;
-    // Check if we're visiting something deeper than the home page.
-    if (isset($args[2]) && !empty($args[2])) {
-      $suffix = '';
-
-      // Regex on the last arg to see if we're trying to load a page or a file.
-      $last_arg = end($args);
-      preg_match('/\.[^\.]+$/i', $last_arg, $ext);
-
-      if (isset($ext[0])) {
-        // This is a file so we need to add headers for it's mime type before we
-        // return the file.
-        $needs_headers = TRUE;
+    // Work out if we're trying to hit a file or a url.
+    $last_arg = end($args);
+    preg_match('/\.[^\.]+$/i', $last_arg, $ext);
+    if (!isset($ext[0])) {
+      // This isn't a file so let's assume we need to load the index.html inside
+      // the folder we've been pointed to.
+      $new_path = Url::fromUri('base:' . $path . '/index.html');
+      $file_path = ltrim($new_path->toString(), '/');
+      if (file_exists($file_path)) {
+        return new RedirectResponse($new_path->toString());
       }
       else {
-        // Assume we're loading the html page.
-        $suffix = '/' . $path;
+        drupal_set_message(t('The requested page could not be found inside Kalastatic'), 'error');
+        throw new NotFoundHttpException();
       }
-
-      $build_args = $args;
-      unset($build_args[0]);
-      unset($build_args[1]);
-      $path = implode('/', $build_args) . $suffix;
-    }
-    else {
-      // There isn't a requested page, so redirect the user to index.html
-      // homepage.
-      $path = Url::fromUri('base:/kalastatic/prototype/index.html');
-      return new RedirectResponse($path->toString());
-    }
-
-    $file = $this->getBuildPath() . '/' . $path;
-
-    // Add headers if needed.
-    if ($needs_headers) {
-      //$mime_type = file_get_mimetype($file);
-      //drupal_add_http_header('Content-Type', $mime_type);
-      //TODO: headers and mime types need to be handed in need to be handled
-      // in an event subscriber http://drupal.stackexchange.com/questions/198850/replacement-for-drupal-add-http-header
-    }
-
-    if (file_exists($file)) {
-      $file_contents = file_get_contents($file);
-      // We have a file to serve so let's do it!
-      return new HtmlResponse($file_contents);
-    }
-    elseif (file_exists($this->getBuildPath() . '/index.html')){
-      // Kalastatic seems to exist but the page that was requested doesn't so
-      // let's throw a Drupal 404.
-      drupal_set_message(t('The requested page could not be found inside Kalastatic'), 'error');
-      throw new NotFoundHttpException();
-    }
-    elseif ((isset($args[1]) && $args[1] == 'prototype') || (isset($args[2]) && $args[2] == 'styleguide')) {
-      // Kalastatic isn't where it's supposed to be so output a nice message.
-      $link_path = Url::fromRoute('kalastatic.settings');
-      $link_text = t('Kalastatic settings page');
-      $replacements = array(
-        '@path' => '\'' . $this->getFilePath() . '\'',
-        '@link' => $this->l($link_text, $link_path),
-      );
-      $page = array(
-        '#markup' => '<h2>' . t('Kalastatic could not be found!') . '</h2><p>' . t("We were looking in @path but it wasn't there. If Kalastatic is living somewhere else you can set the location on the @link.", $replacements) . '</p>',
-      );
-
-      return $page;
     }
   }
 
