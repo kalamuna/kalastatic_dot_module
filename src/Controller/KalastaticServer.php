@@ -10,12 +10,19 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\Core\Asset;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class KalastaticServer extends ControllerBase {
   public function content($type) {
+    $library_discovery = \Drupal::service('library.discovery');
+    //$libraries = $this->libraryDiscoveryParser->buildByExtension('css_js_settings');
+
+    kint($library_discovery->getLibraryByName('kalastatic', 'kalastatic'));
+    kint(\Drupal\Core\Asset\AssetResolver::getCssAssets());
+    die;
     // Get the path and split it up into an array.
     $path = \Drupal::request()->getpathInfo();
     $args = explode('/', $path);
@@ -96,14 +103,17 @@ class KalastaticServer extends ControllerBase {
   public function getFilePath() {
     // If the path variable is set then use that, otherwise assume a default
     // inside the current theme.
-    $path = \Drupal::config('kalastatic.settings')->get('kalastatic_file_path');
-    return $path ? $path : kalastatic_path_to_kalastatic_default();
+    $path = \Drupal::config('kalastatic.settings')->get('kalastatic_src_path');
+    return $path ? $path : kalastatic_path_to_src_default();
   }
 
   /**
    * Return the path to the built prototype relative to the site root.
    */
   public function getBuildPath() {
-    return $this->getFilePath() . '/build';
+    // If the path variable is set then use that, otherwise assume a default
+    // inside the current theme.
+    $path = \Drupal::config('kalastatic.settings')->get('kalastatic_build_path');
+    return $path ? $path : kalastatic_path_to_build_default();
   }
 }

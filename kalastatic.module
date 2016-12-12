@@ -1,11 +1,62 @@
 <?php
 
 /**
- * Return the path to the default path to Kalastatic.
+ * Implements hook_library_info_build().
+ */
+function kalastatic_library_info_build() {
+  $libraries = [];
+  $build_path = \Drupal::config('kalastatic.settings')->get('kalastatic_build_path');
+
+  $libraries['kalastatic'] = [
+    'dependencies' => [
+      'core/jquery',
+    ],
+    'license' => [
+      'name' => 'MIT',
+      'url' => 'https://opensource.org/licenses/MIT',
+      'gpl-compatible' => TRUE,
+    ],
+    'css' => [
+      'theme' => [
+        $build_path . '/styles/main.css' => [],
+      ],
+    ],
+  ];
+
+  // Go through all the js files in the js folder and add them as part of the
+  // library.
+  $js_path = $build_path . '/js';
+  foreach (scandir($js_path) as $key => $filename) {
+    if (preg_match('/^.*\.(js)$/i', $filename)) {
+      $libraries['kalastatic']['js'][$js_path . '/' . $filename] = [
+        'type' => 'internal',
+        'minified' => FALSE,
+      ];
+    }
+  }
+
+  return $libraries;
+}
+
+/**
+ * Return the default path to Kalastatic
+ *
  * The assumption is that it is inside a folder called 'kalastatic' in the
  * current default theme.
  */
-function kalastatic_path_to_kalastatic_default() {
+function kalastatic_path_to_src_default() {
   $default_theme = \Drupal::config('system.theme')->get('default');
   return drupal_get_path('theme', $default_theme) . '/kalastatic';
+}
+
+/**
+ * Return the path to the default build folder.
+ *
+ * Grep the kalastatic.yml file inside of the Kalastatic src folder and work out
+ * where it's being built to.
+ */
+function kalastatic_path_to_build_default() {
+  // TODO: Work some yaml magic.
+  // FORNOW: hardcode because of our routing issues.
+  return DRUPAL_ROOT . '/kalastatic';
 }
