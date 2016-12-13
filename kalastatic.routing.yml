@@ -3,7 +3,7 @@ kalastatic.settings:
   defaults:
     _form: '\Drupal\kalastatic\Form\KalastaticSettingsForm'
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'configure kalastatic'
 
 kalastatic.prototype:
   path: '/kalastatic/prototype/{path}'
@@ -12,7 +12,7 @@ kalastatic.prototype:
     _title: 'Kalastatic Prototype'
     type: prototype
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'view kalastatic prototype'
   options:
     no_cache: TRUE
 
@@ -23,6 +23,6 @@ kalastatic.styleguide:
     _title: 'Kalastatic Styleguide'
     type: styleguide
   requirements:
-    _permission: 'administer site configuration'
+    _permission: 'view kalastatic styleguide'
   options:
     no_cache: TRUE
