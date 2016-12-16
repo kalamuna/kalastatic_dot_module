@@ -328,3 +328,15 @@ function kalastatic_path_to_kalastatic() {
 function kalastatic_path_to_kalastatic_html() {
   return kalastatic_path_to_kalastatic() . '/build';
 }
+
+/**
+ * Implements hook_twigshim_environment().
+ *
+ * Adds the @kalastatic namespace for Twig usage.
+ *
+ * @see http://twig.sensiolabs.org/doc/api.html
+ */
+function kalastatic_twigshim_environment($twig) {
+  // Add the namespaced path for the KalaStatic source.
+  $twig->addPath(kalastatic_path_to_kalastatic() . '/src', 'kalastatic');
+}
