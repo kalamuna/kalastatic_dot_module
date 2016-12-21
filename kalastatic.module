@@ -1,330 +1,63 @@
 <?php
 
 /**
- * @file
- * Kalastatic integration module.
+ * Implements hook_library_info_build().
  */
+function kalastatic_library_info_build() {
+  $build_file_path = \Drupal::config('kalastatic.settings')->get('kalastatic_build_path');
+  $build_path = str_replace(DRUPAL_ROOT, '', $build_file_path);
 
-/**
- * Implements hook_menu().
- */
-function kalastatic_menu() {
-  $items = array();
+  $libraries = [];
+  $libraries['kalastatic'] = [
+    'dependencies' => [
+      'core/jquery',
+    ],
+    'license' => [
+      'name' => 'MIT',
+      'url' => 'https://opensource.org/licenses/MIT',
+      'gpl-compatible' => TRUE,
+    ],
+    'css' => [
+      'theme' => [
+        $build_path . '/styles/main.css' => [],
+      ],
+    ],
+  ];
 
-  $items['admin/config/kalastatic'] = array(
-    'title' => 'Kalastatic',
-    'description' => 'Kalastatic config page.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('kalastatic_config_page'),
-    'access arguments' => array('configure kalastatic'),
-    'type' => MENU_NORMAL_ITEM,
-  );
-
-  $items['admin/config/kalastatic/about'] = array(
-    'title' => 'About',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => 0,
-  );
-
-  $items['admin/config/kalastatic/drupal-assets'] = array(
-    'title' => 'Drupal Assets',
-    'description' => 'A page containing the rendered output of the css and js.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('kalastatic_assets_form'),
-    'access arguments' => array('access content'),
-    'type' => MENU_LOCAL_TASK,
-    'weight' => 1,
-  );
-
-  $items['kalastatic/prototype'] = array(
-    'title' => 'Visit Prototype',
-    'description' => 'The prototype that lives inside Kalastatic',
-    'page callback' => 'kalastatic_serve_ks_files',
-    'access arguments' => array('view kalastatic prototype'),
-    'weight' => 2,
-    'delivery callback' => 'kalastatic_deliver_static_page',
-  );
-
-  /*
-   * Menu callback for styleguide. Note that this just does a drupal_goto to
-   * redirect to the proper url for the styleguide. If we implemented a callback
-   * for 'kalastatic/prototype/styleguide' that was of type MENU_LOCAL_TASK then
-   * Drupal would assume that the local task was to appear on
-   * kalastatic/prototype which of course isn't a Drupal page. This way we can
-   * have the style guide link on /kalastatic and everyone nguyens.
-   */
-  $items['kalastatic/styleguide'] = array(
-    'title' => 'Visit Styleguide',
-    'description' => 'The styleguide that lives inside Kalastatic',
-    'page callback' => 'drupal_goto',
-    'page arguments' => array('kalastatic/prototype/styleguide/index.html'),
-    'access arguments' => array('view kalastatic styleguide'),
-    'weight' => 3,
-  );
-
-  $items['kalastatic/drupal-css'] = array(
-    'title' => 'Drupal CSS',
-    'description' => 'Return an array of information about the css being added to the page',
-    'page callback' => 'kalastatic_get_drupal_asset',
-    'page arguments' => array('css', 2),
-    'access arguments' => array('access content'),
-    'delivery callback' => 'kalastatic_asset_deliver',
-  );
-
-  $items['kalastatic/drupal-js'] = array(
-    'title' => 'Drupal Javascript',
-    'description' => 'Return an array of information about the js being added to the page',
-    'page callback' => 'kalastatic_get_drupal_asset',
-    'page arguments' => array('js', 2),
-    'access arguments' => array('access content'),
-    'delivery callback' => 'kalastatic_asset_deliver',
-  );
-
-  return $items;
-}
-
-/**
- * Implements hook_permission().
- */
-function kalastatic_permission() {
-  return array(
-    'configure kalastatic' => array(
-      'title' => t('Configure Kalastatic'),
-      'description' => t('Access configuration pages provided by the Kalastatic Drupal integration module.'),
-    ),
-    'view kalastatic prototype' => array(
-      'title' => t('View Kalastatic prototype'),
-      'description' => t('View the prototype provided by Kalastatic.'),
-    ),
-    'view kalastatic styleguide' => array(
-      'title' => t('View Kalastatic styleguide'),
-      'description' => t('View the styleguide provided by Kalastatic.'),
-    ),
-  );
-}
-
-/**
- * Implements hook_menu_local_tasks_alter().
- */
-function kalastatic_menu_local_tasks_alter(&$data, $router_item, $root_path) {
-  // Add action link to 'node/add' on 'admin/content' page.
-  if ($root_path == 'admin/config/kalastatic') {
-    $prototype = menu_get_item('kalastatic/prototype');
-    if ($prototype['access']) {
-      $data['tabs'][0]['output'][] = array(
-        '#theme' => 'menu_local_task',
-        '#link' => $prototype,
-      );
-    }
-    $styleguide = menu_get_item('kalastatic/styleguide');
-    if ($styleguide['access']) {
-      $data['tabs'][0]['output'][] = array(
-        '#theme' => 'menu_local_task',
-        '#link' => $styleguide,
-      );
+  // Go through all the js files in the js folder and add them as part of the
+  // library.
+  $js_path = $build_path . '/js';
+  foreach (scandir($js_path) as $key => $filename) {
+    if (preg_match('/^.*\.(js)$/i', $filename)) {
+      $libraries['kalastatic']['js'][$js_path . '/' . $filename] = [
+        'type' => 'internal',
+        'minified' => FALSE,
+      ];
     }
   }
+
+  return $libraries;
 }
 
 /**
- * Page callback for the Kalastatic config page.
- */
-function kalastatic_config_page() {
-  $github_link = 'https://github.com/kalamuna/kalastatic';
-  $form = array(
-    'description' => array(
-      '#markup' => '<p>' . t('Static site framework for prototyping and building out CMS-less websites. See !link for more details.', array('!link' => l($github_link, $github_link))) . '</p>',
-    ),
-    'kalastatic_file_path_wrap' => array(
-      '#type' => 'fieldset',
-      '#title' => t('Path to Kalastatic'),
-      '#collapsible' => FALSE,
-      '#collapsed' => FALSE,
-      'kalastatic_file_path' => array(
-        '#type' => 'textfield',
-        '#title' => t('Path'),
-        '#default_value' => variable_get('kalastatic_file_path'),
-        '#size' => 60,
-        '#description' => t("Provide the path to Kalastatic, relative to Drupal root. If no path is supplied then it will be assumed that Kalastatic is inside a folder called 'kalastatic' in the root of the currently enabled theme."),
-      ),
-    ),
-  );
-
-  return system_settings_form($form);
-}
-
-/**
- * Return either css or js markup that is being added to any given Drupal page.
- */
-function kalastatic_get_drupal_asset($type) {
-  global $conf;
-  switch ($type) {
-    case 'css':
-      $conf['preprocess_css'] = FALSE;
-      $output = drupal_get_css();
-      break;
-
-    case 'js':
-      $conf['preprocess_js'] = FALSE;
-      $output = drupal_get_js();
-      break;
-  }
-
-  return $output;
-}
-
-/**
- * Delivery callback for returning Drupal css or js.
- */
-function kalastatic_asset_deliver($assets) {
-  drupal_add_http_header('Content-Type', 'application/json; charset=utf-8');
-
-  // Allow embedding the assets across different domains.
-  drupal_add_http_header('Access-Control-Allow-Origin', '*');
-
-  // Print the response.
-  print $assets;
-
-  // Perform end-of-request tasks.
-  ajax_footer();
-}
-
-
-/**
- * Build a form containing the css and js in textareas so it can be copy pasted.
- */
-function kalastatic_assets_form($form, &$form_state) {
-  $css = kalastatic_get_drupal_asset('css');
-  $js = kalastatic_get_drupal_asset('js');
-
-  $form['description'] = array(
-    '#markup' => 'Copy and paste the following markup into your html.html template to add the Drupal CSS and Javascript to Kalastatic.',
-  );
-
-  $form['css'] = array(
-    '#title' => 'Drupal CSS',
-    '#type' => 'textarea',
-    '#default_value' => $css,
-  );
-  $form['js'] = array(
-    '#title' => 'Drupal Javascript',
-    '#type' => 'textarea',
-    '#default_value' => $js,
-  );
-
-  return $form;
-}
-
-/**
- * Return the requested file/page from within the prototype/styleguide.
+ * Return the default path to Kalastatic
  *
- * If it's something other than an html file (css, js, image) then we need to
- * set the headers as well.
+ * The assumption is that it is inside a folder called 'kalastatic' in the
+ * current default theme.
  */
-function kalastatic_serve_ks_files() {
-  $args = arg();
-
-  $path = 'index.html';
-  $needs_headers = FALSE;
-  // Check if we're visiting something deeper than the home page.
-  if (isset($args[2])) {
-    $suffix = '';
-
-    // Regex on the last arg to see if we're trying to load a page or a file.
-    $last_arg = end($args);
-    preg_match('/\.[^\.]+$/i', $last_arg, $ext);
-
-    if (isset($ext[0])) {
-      // This is a file so we need to add headers for it's mime type before we
-      // return the file.
-      $needs_headers = TRUE;
-    }
-    else {
-      // Assume we're loading the html page.
-      $suffix = '/' . $path;
-    }
-
-    unset($args[0]);
-    unset($args[1]);
-    $path = implode('/', $args) . $suffix;
-  }
-  else {
-    // There isn't a requested page, so redirect the user to index.html homepage.
-    drupal_goto('kalastatic/prototype/index.html');
-  }
-
-  $file = kalastatic_path_to_kalastatic_html() . '/' . $path;
-
-  // Add headers if needed.
-  if ($needs_headers) {
-    $mime_type = file_get_mimetype($file);
-    drupal_add_http_header('Content-Type', $mime_type);
-  }
-  if (file_exists($file)) {
-    $file_contents = file_get_contents($file);
-    // We have a file to serve so let's do it!
-    return $file_contents;
-  }
-  elseif ((isset($args[1]) && $args[1] == 'prototype') || (isset($args[2]) && $args[2] == 'styleguide')) {
-    // Kalastatic isn't were it's supposed to be so output a nice message.
-    $replacements = array(
-      '!path' => '<code>' . kalastatic_path_to_kalastatic() . '</code>',
-      '!link' => l(t('About page'), 'admin/config/kalastatic'),
-    );
-    $page = array(
-      '#markup' => '<h2>' . t('Kalastatic could not be found!') . '</h2><p>' . t("We were looking in !path but it wasn't there. If Kalastatic is living somewhere else you can set the location on the !link.", $replacements) . '</p>',
-    );
-
-    return drupal_deliver_html_page($page);
-  }
+function kalastatic_path_to_src_default() {
+  $default_theme = \Drupal::config('system.theme')->get('default');
+  return drupal_get_path('theme', $default_theme) . '/kalastatic';
 }
 
 /**
- * Stolen largely from drupal_deliver_html_page().
+ * Return the path to the default build folder.
+ *
+ * Grep the kalastatic.yml file inside of the Kalastatic src folder and work out
+ * where it's being built to.
  */
-function kalastatic_deliver_static_page($page_callback_result) {
-  // Emit the correct charset HTTP header, but not if the page callback
-  // result is NULL, since that likely indicates that it printed something
-  // in which case, no further headers may be sent, and not if code running
-  // for this page request has already set the content type header.
-  if (isset($page_callback_result) && is_null(drupal_get_http_header('Content-Type'))) {
-    drupal_add_http_header('Content-Type', 'text/html; charset=utf-8');
-  }
-
-  // Send appropriate HTTP-Header for browsers and search engines.
-  global $language;
-  drupal_add_http_header('Content-Language', $language->language);
-
-  if (isset($page_callback_result)) {
-    // Print anything besides a menu constant, assuming it's not NULL or
-    // undefined.
-    print $page_callback_result;
-  }
-
-  // Perform end-of-request tasks.
-  drupal_page_footer();
-}
-
-/**
- * Return the path to the default path to Kalastatic.
- */
-function kalastatic_path_to_kalastatic_default() {
-  return path_to_theme() . '/kalastatic';
-}
-
-/**
- * Return the path to the Kalastatic project relative to the site root.
- */
-function kalastatic_path_to_kalastatic() {
-  // If the path variable is set then use that, otherwise assume a default
-  // inside the current theme.
-  $path = variable_get('kalastatic_file_path');
-  return $path ? $path : kalastatic_path_to_kalastatic_default();
-}
-
-/**
- * Return the path to the built prototype relative to the site root.
- */
-function kalastatic_path_to_kalastatic_html() {
-  return kalastatic_path_to_kalastatic() . '/build';
+function kalastatic_path_to_build_default() {
+  // TODO: Work some yaml magic.
+  // FORNOW: hardcode because of our routing issues.
+  return DRUPAL_ROOT . '/kalastatic';
 }

@@ -1,0 +1,5 @@
+services:
+  kalastatic.path_processor:
+    class: Drupal\kalastatic\PathProcessor\KalastaticPathProcessor
+    tags:
+      - { name: path_processor_inbound, priority: 250 }

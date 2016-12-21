@@ -1,29 +1,17 @@
 <?php
 
 /**
- * @file
- * Kalastatic integration module install.
- */
-
-/**
  * Implements hook_install().
  */
 function kalastatic_install() {
-  // We REALLY want this to run last.
-  db_update('system')
-    ->fields(array('weight' => 9999))
-    ->condition('name', 'kalastatic')
-    ->execute();
+  // Set default values for config which require dynamic values.
+  $settings = \Drupal::configFactory()->getEditable('kalastatic.settings');
 
-  // Anonymous and authenticated users get access to the prototype/styleguide.
-  $roles = array(
-    DRUPAL_ANONYMOUS_RID,
-    DRUPAL_AUTHENTICATED_RID
-  );
-  foreach ($roles as $role) {
-    user_role_grant_permissions($role, array(
-      'view kalastatic styleguide',
-      'view kalastatic prototype',
-    ));
-  }
+  // Path to Kalastatic src files.
+  $settings->set('kalastatic_src_path', kalastatic_path_to_src_default())
+    ->save();
+
+  // Path to Kalastatic build folder.
+  $settings->set('kalastatic_build_path', kalastatic_path_to_build_default())
+    ->save();
 }
