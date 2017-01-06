@@ -337,6 +337,26 @@ function kalastatic_path_to_kalastatic_html() {
  * @see http://twig.sensiolabs.org/doc/api.html
  */
 function kalastatic_twigshim_loader($loader) {
-  // Add the namespaced path for the KalaStatic source.
-  $loader->addPath(kalastatic_path_to_kalastatic() . '/src', 'kalastatic');
+  $source = kalastatic_path_to_kalastatic() . '/src';
+  if (is_dir($source)) {
+    // Add the namespaced path for the KalaStatic source.
+    $loader->addPath(kalastatic_path_to_kalastatic() . '/src', 'kalastatic');
+  }
+}
+
+/**
+ * Implements hook_twigshim_environment().
+ *
+ * Adds any additional needed variables to the Twig environment.
+ */
+function kalastatic_twigshim_environment($twig) {
+  // Expose Drupal's base_path().
+  $base_path = base_path();
+
+  // Expose KalaStatic's destination build path.
+  $build_path = $base_path . kalastatic_path_to_kalastatic_html();
+
+  // Let Twig know about the new global variables.
+  $twig->addGlobal('base_path', $base_path);
+  $twig->addGlobal('build_path', $build_path);
 }
