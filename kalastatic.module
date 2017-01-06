@@ -61,3 +61,16 @@ function kalastatic_path_to_build_default() {
   // FORNOW: hardcode because of our routing issues.
   return DRUPAL_ROOT . '/kalastatic';
 }
+
+/**
+ * Implements hook_preprocess_html().
+ *
+ * Adds any KalaStatic-specific variables to Twig.
+ */
+function kalastatic_preprocess_html(&$variables) {
+  // Add the build_path global variable so Twig can use it.
+  if (!isset($variables['build_path'])) {
+    // TODO Figure out the true destination path from kalastatic.yaml.
+    $variables['build_path'] = base_path() . 'kalastatic/';
+  }
+}
