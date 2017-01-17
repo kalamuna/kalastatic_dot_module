@@ -42,7 +42,7 @@ class KalastaticSettingsForm extends ConfigFormBase {
 
     $form = array(
       'description' => array(
-        '#markup' => '<p>' . t('Static site framework for prototyping and building out CMS-less websites. See !link for more details.', array('!link' => $github_link)) . '</p>',
+        '#markup' => '<p>' . t('Static site framework for prototyping and building out CMS-less websites. See @link for more details.', array('@link' => $github_link)) . '</p>',
       ),
       'kalastatic_file_path_wrap' => array(
         '#type' => 'fieldset',
