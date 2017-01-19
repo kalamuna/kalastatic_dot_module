@@ -78,9 +78,9 @@ function kalastatic_preprocess_html(&$variables) {
 /**
 * Prepare the variables from a text_with_summary field.
  */
-function kalastatic_prepare_field__text_with_summary($field, $node) {
+function kalastatic_prepare_field__text_with_summary($field, $entity) {
   $output = [];
-  foreach ($node->$field->getValue() as $i => $item) {
+  foreach ($entity->$field->getValue() as $i => $item) {
     $text = check_markup($item['value'], $item['format']); // TODO: langcode, cache??
     // TODO: We probably want to have an teaser option that returns the summary.
     $output[$i] = $text->__toString();
@@ -93,10 +93,10 @@ function kalastatic_prepare_field__text_with_summary($field, $node) {
 /**
  * Prepare the variables from an image field, ready for the image.html.twig
  */
-function kalastatic_prepare_field__image($field, $node) {
+function kalastatic_prepare_field__image($field, $entity) {
   $imgs = [];
-  foreach ($node->$field->getValue() as $i => $item) {
-    $image_url = $node->get($field)->entity->uri->value;
+  foreach ($entity->$field->getValue() as $i => $item) {
+    $image_url = $entity->get($field)->entity->uri->value;
     $imgs[$i] = [
       'url' => file_create_url($image_url),
       'title' => $item['title'],
@@ -108,4 +108,59 @@ function kalastatic_prepare_field__image($field, $node) {
 
   // If there's only a single image then don't return a nested array.
   return count($imgs) == 1 ? $imgs[0] : $imgs;
+}
+
+/**
+ * Prepare the variables from an image field, ready for the image.html.twig
+ */
+function kalastatic_prepare_field__entity_reference($field, $entity, $formatter) {
+  $output = [];
+  foreach ($entity->$field->referencedEntities() as $i => $item) {
+    if ($formatter) {
+      // Caller wants the referenced entites in a specific format.
+      // TODO: Can we use actual field formatters/view modes somehow?
+      $func = 'kalastatic_format_' . $formatter;
+      $output[$i] = $func($item);
+    }
+    else {
+      // Otherwise just return the whole entity for manual tinkering.
+      $output[$i] = $item;
+    }
+  }
+
+  // If there's only a single image then don't return a nested array.
+  return count($output) == 1 ? $output[0] : $output;
+}
+
+/**
+ * Prepare the variables from a link field.
+ */
+function kalastatic_prepare_field__link($field, $entity) {
+  $output = [];
+
+  // Handle link field.
+
+
+  // If there's only a single image then don't return a nested array.
+  return count($output) == 1 ? $output[0] : $output;
+}
+
+/**
+ * Prepare the variables from an entity to make a link like Kalastatic wants.
+ */
+function kalastatic_format_entity_link($entity, $text = '') {
+  // TODO: extend with other attributes.
+  $url = $entity->toUrl()->toString();
+  $text = $text ? $text : $entity->label();
+  return kalastatic_format_link($url, $text);
+}
+
+/**
+ * Prepare the variables to make a link like Kalastatic wants.
+ */
+function kalastatic_format_link($url, $text) {
+  return array(
+    'url' => $url,
+    'text' => $text,
+  );
 }
