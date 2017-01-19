@@ -74,3 +74,38 @@ function kalastatic_preprocess_html(&$variables) {
     $variables['build_path'] = base_path() . 'kalastatic/';
   }
 }
+
+/**
+* Prepare the variables from a text_with_summary field.
+ */
+function kalastatic_prepare_field__text_with_summary($field, $node) {
+  $output = [];
+  foreach ($node->$field->getValue() as $i => $item) {
+    $text = check_markup($item['value'], $item['format']); // TODO: langcode, cache??
+    // TODO: We probably want to have an teaser option that returns the summary.
+    $output[$i] = $text->__toString();
+  }
+
+  // If there's only a single image then don't return a nested array.
+  return count($output) == 1 ? $output[0] : $output;
+}
+
+/**
+ * Prepare the variables from an image field, ready for the image.html.twig
+ */
+function kalastatic_prepare_field__image($field, $node) {
+  $imgs = [];
+  foreach ($node->$field->getValue() as $i => $item) {
+    $image_url = $node->get($field)->entity->uri->value;
+    $imgs[$i] = [
+      'url' => file_create_url($image_url),
+      'title' => $item['title'],
+      'alt' => $item['alt'],
+      'width' => $item['width'],
+      'height' => $item['height'],
+    ];
+  }
+
+  // If there's only a single image then don't return a nested array.
+  return count($imgs) == 1 ? $imgs[0] : $imgs;
+}
