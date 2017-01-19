@@ -58,8 +58,7 @@ function kalastatic_path_to_src_default() {
  */
 function kalastatic_path_to_build_default() {
   // TODO: Work some yaml magic.
-  // FORNOW: hardcode because of our routing issues.
-  return DRUPAL_ROOT . '/kalastatic';
+  return kalastatic_path_to_src_default() . '/build';
 }
 
 /**
