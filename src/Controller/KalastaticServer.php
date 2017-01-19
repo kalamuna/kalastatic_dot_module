@@ -20,9 +20,6 @@ class KalastaticServer extends ControllerBase {
     $library_discovery = \Drupal::service('library.discovery');
     //$libraries = $this->libraryDiscoveryParser->buildByExtension('css_js_settings');
 
-    kint($library_discovery->getLibraryByName('kalastatic', 'kalastatic'));
-    kint(\Drupal\Core\Asset\AssetResolver::getCssAssets());
-    die;
     // Get the path and split it up into an array.
     $path = \Drupal::request()->getpathInfo();
     $args = explode('/', $path);
