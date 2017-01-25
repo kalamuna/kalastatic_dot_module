@@ -95,7 +95,12 @@ function kalastatic_prepare_field__text_with_summary($field, $entity) {
 function kalastatic_prepare_field__image($field, $entity) {
   $imgs = [];
   foreach ($entity->$field->getValue() as $i => $item) {
-    $image_url = $entity->get($field)->entity->uri->value;
+    if ($entity->get($field)->entity) {
+      $image_url = $entity->get($field)->entity->uri->value;
+    }
+    else {
+      $image_url = '';
+    }
     $imgs[$i] = [
       'url' => file_create_url($image_url),
       'title' => $item['title'],
