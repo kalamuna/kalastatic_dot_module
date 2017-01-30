@@ -80,6 +80,14 @@ CONFIGURATION
      Users with this permission will be able to access the prototype at
      /kalastatic/styleguide. But why hide the beauty? Let everyone see it!
 
+USAGE
+-----
+
+1. Reference the path to [KalaStatic](http://github.com/kalamuna/kalastatic) in your site at `admin/config/kalastatic`
+2. Set up your KalaStatic site and run `kalastatic build` to build it
+3. Visit `/kalastatic/prototype/` to see the site
+4. Visit `/kalastatic/styleguide` to visit the styleguide
+
 
 UPGRADING
 ----------
