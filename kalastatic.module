@@ -359,5 +359,13 @@ function kalastatic_twigshim_environment($twig) {
   // Let Twig know about the new global variables.
   // TODO: Reintroduce base_path once url() is used in PROGMI.
   //$twig->addGlobal('base_path', $base_path);
+  
+  // Expose the build_path to Twig.
   $twig->addGlobal('build_path', $build_path);
+
+  // Set the site name variable for use in Twig.
+  $twig->addGlobal('site_name', variable_get('site_name'));
+
+  // Tell Twig that Drupal is the build context.
+  $twig->addGlobal('build_context', 'drupal');
 }
