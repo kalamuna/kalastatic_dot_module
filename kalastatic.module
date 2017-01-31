@@ -357,6 +357,7 @@ function kalastatic_twigshim_environment($twig) {
   $build_path = $base_path . kalastatic_path_to_kalastatic_html();
 
   // Let Twig know about the new global variables.
-  $twig->addGlobal('base_path', $base_path);
+  // TODO: Reintroduce base_path once url() is used in PROGMI.
+  //$twig->addGlobal('base_path', $base_path);
   $twig->addGlobal('build_path', $build_path);
 }
