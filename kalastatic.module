@@ -351,8 +351,8 @@ function kalastatic_twigshim_loader($loader) {
  */
 function kalastatic_twigshim_environment($twig) {
   // Expose KalaStatic's destination build path.
-  $build_path = '/';
+  $asset_path = kalastatic_path_to_kalastatic_html();
 
   // Let Twig know about the new global variables.
-  $twig->addGlobal('build_path', $build_path);
+  $twig->addGlobal('static_asset_path', $asset_path);
 }
