@@ -350,14 +350,9 @@ function kalastatic_twigshim_loader($loader) {
  * Adds any additional needed variables to the Twig environment.
  */
 function kalastatic_twigshim_environment($twig) {
-  // Expose Drupal's base_path().
-  $base_path = base_path();
-
   // Expose KalaStatic's destination build path.
-  $build_path = $base_path . kalastatic_path_to_kalastatic_html();
+  $build_path = '/';
 
   // Let Twig know about the new global variables.
-  // TODO: Reintroduce base_path once url() is used in PROGMI.
-  //$twig->addGlobal('base_path', $base_path);
   $twig->addGlobal('build_path', $build_path);
 }
