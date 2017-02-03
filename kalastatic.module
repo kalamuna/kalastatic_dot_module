@@ -326,7 +326,7 @@ function kalastatic_path_to_kalastatic() {
  * Return the path to the built prototype relative to the site root.
  */
 function kalastatic_path_to_kalastatic_html() {
-  return '/build';
+  return '/kalastatic';
 }
 
 /**
