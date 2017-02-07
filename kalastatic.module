@@ -356,3 +356,36 @@ function kalastatic_twigshim_environment($twig) {
   // Let Twig know about the new global variables.
   $twig->addGlobal('static_asset_path', $asset_path);
 }
+
+/**
+ * Given an image uri and a picture mapping, generate urls for each breakpoint
+ * and pixel ratio combination.
+ */
+function kalastatic_get_picture_urls($uri, $mapping) {
+  // Log a message if the picture and breakoints modules aren't on. Also return
+  // the uri so this still has a chance of showing an image.
+  if (!module_exists('picture') || !module_exists('breakpoints')) {
+    watchdog('kalastatic_get_picture_urls() requires the picture and breakpoints modules in order to generate all the images.');
+    return $uri;
+  }
+
+  // Grab the picture mapping and breakpoints to apply to the image.
+  $picture_mapping = picture_mapping_load($mapping);
+  $breakpoints = picture_get_mapping_breakpoints($picture_mapping);
+
+  // Go through all the breakpoints to build the media queries.
+  $media_queries = array();
+  foreach ($breakpoints as $machine_name => $multiplier) {
+    $bp = breakpoints_breakpoint_load_by_fullkey($machine_name);
+    $bp_string = $bp->breakpoint;
+    foreach ($multiplier as $x => $settings) {
+      // Manually build a url to the image style.
+      $img_url = image_style_url($settings['image_style'], $uri);
+
+      // Store in an array keyed by the multiplier.
+      $urls[$bp_string][$x] = $img_url;
+    }
+  }
+
+  return $urls;
+}
