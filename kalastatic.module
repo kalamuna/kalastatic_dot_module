@@ -82,7 +82,7 @@ function kalastatic_prepare_field__text_with_summary($field, $entity) {
   foreach ($entity->$field->getValue() as $i => $item) {
     $text = check_markup($item['value'], $item['format']); // TODO: langcode, cache??
     // TODO: We probably want to have an teaser option that returns the summary.
-    $output[$i] = $text->__toString();
+    $output[$i] = $text;
   }
 
   // If there's only a single image then don't return a nested array.
