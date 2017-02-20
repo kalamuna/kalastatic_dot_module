@@ -77,16 +77,26 @@ function kalastatic_preprocess_html(&$variables) {
 /**
 * Prepare the variables from a text_with_summary field.
  */
-function kalastatic_prepare_field__text_with_summary($field, $entity) {
+function kalastatic_prepare_field__text_with_summary($field, $entity, $summary = FALSE) {
   $output = [];
   foreach ($entity->$field->getValue() as $i => $item) {
-    $text = check_markup($item['value'], $item['format']); // TODO: langcode, cache??
-    // TODO: We probably want to have an teaser option that returns the summary.
+    $value = $summary ? $item['summary'] : $item['value'];
+    $text = check_markup($value, $item['format']); // TODO: langcode, cache??
     $output[$i] = $text;
   }
+  return _kalastatic_handle_field_delta($output);
+}
 
-  // If there's only a single image then don't return a nested array.
-  return count($output) == 1 ? $output[0] : $output;
+/**
+* Prepare the variables from a text_with_summary field.
+ */
+function kalastatic_prepare_field__text($field, $entity) {
+  $output = [];
+  foreach ($entity->$field->getValue() as $i => $item) {
+    // Shouldn't need to sanitize because Twig?
+    $output[$i] = $item['value'];
+  }
+  return _kalastatic_handle_field_delta($output);
 }
 
 /**
@@ -101,7 +111,7 @@ function kalastatic_prepare_field__image($field, $entity) {
     else {
       $image_url = '';
     }
-    $imgs[$i] = [
+    $output[$i] = [
       'url' => file_create_url($image_url),
       'title' => $item['title'],
       'alt' => $item['alt'],
@@ -109,9 +119,7 @@ function kalastatic_prepare_field__image($field, $entity) {
       'height' => $item['height'],
     ];
   }
-
-  // If there's only a single image then don't return a nested array.
-  return count($imgs) == 1 ? $imgs[0] : $imgs;
+  return _kalastatic_handle_field_delta($output);
 }
 
 /**
@@ -131,9 +139,7 @@ function kalastatic_prepare_field__entity_reference($field, $entity, $formatter)
       $output[$i] = $item;
     }
   }
-
-  // If there's only a single image then don't return a nested array.
-  return count($output) == 1 ? $output[0] : $output;
+  return _kalastatic_handle_field_delta($output);
 }
 
 /**
@@ -143,10 +149,15 @@ function kalastatic_prepare_field__link($field, $entity) {
   $output = [];
 
   // Handle link field.
+  foreach ($entity->$field->getValue() as $i => $item) {
+    $output[$i] = array(
+      'url' => $item['uri'],
+      'text' => $item['title'],
+      'attributes' => $item['_attributes'],
+    );
+  }
 
-
-  // If there's only a single image then don't return a nested array.
-  return count($output) == 1 ? $output[0] : $output;
+  return _kalastatic_handle_field_delta($output);
 }
 
 /**
@@ -167,4 +178,11 @@ function kalastatic_format_link($url, $text) {
     'url' => $url,
     'text' => $text,
   );
+}
+
+/**
+ * If there's only a single item then don't return a nested array.
+ */
+function _kalastatic_handle_field_delta($output) {
+  return count($output) == 1 ? $output[0] : $output;
 }
