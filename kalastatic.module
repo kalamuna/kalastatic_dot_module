@@ -103,7 +103,7 @@ function kalastatic_prepare_field__text($field, $entity) {
  * Prepare the variables from an image field, ready for the image.html.twig
  */
 function kalastatic_prepare_field__image($field, $entity) {
-  $imgs = [];
+  $output = [];
   foreach ($entity->$field->getValue() as $i => $item) {
     if ($entity->get($field)->entity) {
       $image_url = $entity->get($field)->entity->uri->value;
