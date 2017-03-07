@@ -102,8 +102,13 @@ function kalastatic_prepare_field__text($field, $entity) {
 
 /**
  * Prepare the variables from an image field, ready for the image.html.twig
+ *
+ * @param $field The name of the image field we are acting on.
+ * @param $entity The entity that holds the image field.
+ * @param $view_mode The view mode to prepare the image field with. If not
+ *   provided, will use the default' view mode.
  */
-function kalastatic_prepare_field__image($field, $entity, $view_mode) {
+function kalastatic_prepare_field__image($field, $entity, $view_mode = NULL) {
   $output = [];
   foreach ($entity->$field->getValue() as $i => $item) {
     if ($entity->get($field)->entity) {
