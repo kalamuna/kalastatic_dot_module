@@ -365,7 +365,7 @@ function kalastatic_get_picture_urls($uri, $mapping) {
   // Log a message if the picture and breakoints modules aren't on. Also return
   // the uri so this still has a chance of showing an image.
   if (!module_exists('picture') || !module_exists('breakpoints')) {
-    watchdog('kalastatic_get_picture_urls() requires the picture and breakpoints modules in order to generate all the images.');
+    watchdog('kalastatic', 'kalastatic_get_picture_urls() requires the picture and breakpoints modules in order to generate all the images.');
     return $uri;
   }
 
