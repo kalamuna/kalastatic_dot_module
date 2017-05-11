@@ -12,3 +12,8 @@ view kalastatic styleguide:
     title: 'View Kalastatic Styleguide'
     description: 'View the Styleguide built out by Kalastatic.'
     restrict access: TRUE
+
+view kalastatic content:
+    title: 'View Kalastatic Content'
+    description: 'View the content built out by Kalastatic.'
+    restrict access: TRUE

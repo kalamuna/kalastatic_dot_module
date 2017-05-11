@@ -16,56 +16,68 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class KalastaticServer extends ControllerBase {
-  public function content($type) {
-    $library_discovery = \Drupal::service('library.discovery');
+  public function content() {
+    xdebug_break();
+    //$library_discovery = \Drupal::service('library.discovery');
     //$libraries = $this->libraryDiscoveryParser->buildByExtension('css_js_settings');
 
-    // Get the path and split it up into an array.
+    // Get the path and split it up into an array. Note that due to our (not so)
+    // fancy path processor in KalastaticPathProcessor everything underneath
+    // /kalastatic/ is coming in split up with colons. This brings back the
+    // 'catch all' functionality of hook_menu that we relied on in D7 to hanlde
+    // everything below a given path.
     $path = \Drupal::request()->getpathInfo();
     $args = explode('/', $path);
-    array_shift($args);
+    $args = explode(':', $args[2]);
+    $path = implode('/', $args);
 
-    $path = 'index.html';
-    $needs_headers = FALSE;
-    // Check if we're visiting something deeper than the home page.
-    if (isset($args[2]) && !empty($args[2])) {
-      $suffix = '';
+    xdebug_break();
+    //$path = 'index.html';
+    //$needs_headers = FALSE;
+    // Check if we're visiting something deeper than the styleguide or prototype
+    // home page.
+    //if (isset($args[3]) && !empty($args[3])) {
+      //$suffix = '';
 
       // Regex on the last arg to see if we're trying to load a page or a file.
-      $last_arg = end($args);
-      preg_match('/\.[^\.]+$/i', $last_arg, $ext);
+      //$last_arg = end($args);
+      //preg_match('/\.[^\.]+$/i', $last_arg, $ext);
 
-      if (isset($ext[0])) {
-        // This is a file so we need to add headers for it's mime type before we
-        // return the file.
-        $needs_headers = TRUE;
-      }
-      else {
-        // Assume we're loading the html page.
-        $suffix = '/' . $path;
-      }
+      // if (isset($ext[0])) {
+      //   // This is a file so we need to add headers for it's mime type before we
+      //   // return the file.
+      //   $needs_headers = TRUE;
+      // }
+      // else {
+      //   // Assume we're loading the html page.
+      //   $suffix = '/' . $path;
+      //}
 
-      $build_args = $args;
-      unset($build_args[0]);
-      unset($build_args[1]);
-      $path = implode('/', $build_args) . $suffix;
-    }
-    else {
-      // There isn't a requested page, so redirect the user to index.html
-      // homepage.
-      $path = Url::fromUri('base:/kalastatic/prototype/index.html');
-      return new RedirectResponse($path->toString());
-    }
+      // if (isset($ext[0]) && $ext[0] == '.html') {
+      //   $suffix = '/' . $path;
+      // }
+
+      // $build_args = $args;
+      // unset($build_args[0]);
+      // //unset($build_args[1]);
+      // $path = implode('/', $build_args);
+    // }
+    // else {
+    //   // There isn't a requested page, so redirect the user to index.html
+    //   // homepage.
+    //   $path = Url::fromUri('base:/kalastatic/prototype/index.html');
+    //   return new RedirectResponse($path->toString());
+    // }
 
     $file = $this->getBuildPath() . '/' . $path;
 
     // Add headers if needed.
-    if ($needs_headers) {
+    //if ($needs_headers) {
       //$mime_type = file_get_mimetype($file);
       //drupal_add_http_header('Content-Type', $mime_type);
       //TODO: headers and mime types need to be handed in need to be handled
       // in an event subscriber http://drupal.stackexchange.com/questions/198850/replacement-for-drupal-add-http-header
-    }
+    //}
 
     if (file_exists($file)) {
       $file_contents = file_get_contents($file);
@@ -83,11 +95,11 @@ class KalastaticServer extends ControllerBase {
       $link_path = Url::fromRoute('kalastatic.settings');
       $link_text = t('Kalastatic settings page');
       $replacements = array(
-        '@path' => '\'' . $this->getFilePath() . '\'',
+        '@path' => '\'' . $this->getBuildPath() . '\'',
         '@link' => $this->l($link_text, $link_path),
       );
       $page = array(
-        '#markup' => '<h2>' . t('Kalastatic could not be found!') . '</h2><p>' . t("We were looking in @path but it wasn't there. If Kalastatic is living somewhere else you can set the location on the @link.", $replacements) . '</p>',
+        '#markup' => '<h2>' . t('Kalastatic build could not be found!') . '</h2><p>' . t("We were looking in @path but it wasn't there. If Kalastatic is living somewhere else you can set the location on the @link.", $replacements) . '</p>',
       );
 
       return $page;
