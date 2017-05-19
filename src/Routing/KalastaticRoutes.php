@@ -17,7 +17,6 @@ class KalastaticRoutes {
    * {@inheritdoc}
    */
   public function routes() {
-    xdebug_break();
     $routes = array();
     $path = '/kalastatic';
 

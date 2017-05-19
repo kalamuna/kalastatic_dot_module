@@ -52,7 +52,7 @@ class KalastaticServer extends ControllerBase {
       $file_contents = file_get_contents($file);
 
       // We have a file, now lets see if we need to set the headers
-      if ('html' == $ext[0]) {
+      if (!empty($ext) && 'html' == $ext[0]) {
         // This is html file so return a HtmlResponse.
         $output = new HtmlResponse($file_contents);
       }

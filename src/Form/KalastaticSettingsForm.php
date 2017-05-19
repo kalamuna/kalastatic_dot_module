@@ -40,9 +40,23 @@ class KalastaticSettingsForm extends ConfigFormBase {
     $github_url = 'https://github.com/kalamuna/kalastatic';
     $github_link = Link::fromTextAndUrl($github_url, Url::fromUri($github_url))->toString();
 
+    // Obviously not ACTUALLY user input but how else do you create a url from
+    // a dynamic route?
+    $options = ['attributes' => ['target' => '_blank']];
+    $proto_url = Url::fromUserInput('/kalastatic/prototype', $options);
+    $style_url = Url::fromUserInput('/kalastatic/styleguide', $options);
+    $links = [
+      \Drupal::l(t('Visit prototype'), $proto_url),
+      \Drupal::l(t('Visit styleguide'), $style_url)
+    ];
+
     $form = array(
       'description' => array(
-        '#markup' => '<p>' . t('Static site framework for prototyping and building out CMS-less websites. See @link for more details.', array('@link' => $github_link)) . '</p>',
+        '#markup' => '<p>' . t('Static site framework for prototyping and building out CMS-less websites and styleguides. See @link for more details.', array('@link' => $github_link)) . '</p>',
+      ),
+      'links' => array(
+        '#theme' => 'item_list',
+        '#items' => $links,
       ),
       'kalastatic_src_path_wrap' => array(
         '#type' => 'fieldset',
