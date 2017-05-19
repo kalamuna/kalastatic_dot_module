@@ -17,7 +17,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class KalastaticServer extends ControllerBase {
   public function content() {
-    xdebug_break();
+
+
+    // return array(
+    //   '#markup' => 'this is working',
+    // );
+
     //$library_discovery = \Drupal::service('library.discovery');
     //$libraries = $this->libraryDiscoveryParser->buildByExtension('css_js_settings');
 
@@ -26,12 +31,12 @@ class KalastaticServer extends ControllerBase {
     // /kalastatic/ is coming in split up with colons. This brings back the
     // 'catch all' functionality of hook_menu that we relied on in D7 to hanlde
     // everything below a given path.
-    $path = \Drupal::request()->getpathInfo();
-    $args = explode('/', $path);
-    $args = explode(':', $args[2]);
-    $path = implode('/', $args);
+    // $path = \Drupal::request()->getpathInfo();
+    // $args = explode('/', $path);
+    // $args = explode(':', $args[2]);
+    // $path = implode('/', $args);
 
-    xdebug_break();
+    //xdebug_break();
     //$path = 'index.html';
     //$needs_headers = FALSE;
     // Check if we're visiting something deeper than the styleguide or prototype
@@ -68,8 +73,36 @@ class KalastaticServer extends ControllerBase {
     //   $path = Url::fromUri('base:/kalastatic/prototype/index.html');
     //   return new RedirectResponse($path->toString());
     // }
+    xdebug_break();
+    $build_path = $this->getBuildPath();
 
-    $file = $this->getBuildPath() . '/' . $path;
+    // Get an array of the url args.
+    $path = \Drupal::request()->getpathInfo();
+    $args = explode('/', $path);
+
+    // Get rid of the empty one and also the 'kalastatic' that will always be
+    // there.
+    unset($args[0]);
+    unset($args[1]);
+
+    // Now we have the path to look for inside the Kalastatic build path.
+    $path = implode('/', $args);
+
+    // Regex on the last arg to see if we're trying to load a page or a file.
+    $last_arg = end($args);
+    preg_match('/\.[^\.]+$/i', $last_arg, $ext);
+    $build_path = $this->getBuildPath();
+    if (isset($ext[0])) {
+      // This is a file so let's build the path to it.
+      $file = $build_path . '/' . $path;
+    }
+    else {
+      // This is a path with no file at the end but there might be an index.html
+      // to load.
+      $file = $build_path . '/' . $path . '/index.html';
+    }
+
+    //xdebug_break();
 
     // Add headers if needed.
     //if ($needs_headers) {
@@ -82,28 +115,47 @@ class KalastaticServer extends ControllerBase {
     if (file_exists($file)) {
       $file_contents = file_get_contents($file);
       // We have a file to serve so let's do it!
-      return new HtmlResponse($file_contents);
+      $output = new HtmlResponse($file_contents);
     }
-    elseif (file_exists($this->getBuildPath() . '/index.html')){
+    elseif (file_exists($build_path)){
       // Kalastatic seems to exist but the page that was requested doesn't so
       // let's throw a Drupal 404.
       drupal_set_message(t('The requested page could not be found inside Kalastatic'), 'error');
       throw new NotFoundHttpException();
     }
-    elseif ((isset($args[1]) && $args[1] == 'prototype') || (isset($args[2]) && $args[2] == 'styleguide')) {
-      // Kalastatic isn't where it's supposed to be so output a nice message.
-      $link_path = Url::fromRoute('kalastatic.settings');
-      $link_text = t('Kalastatic settings page');
-      $replacements = array(
-        '@path' => '\'' . $this->getBuildPath() . '\'',
-        '@link' => $this->l($link_text, $link_path),
-      );
-      $page = array(
-        '#markup' => '<h2>' . t('Kalastatic build could not be found!') . '</h2><p>' . t("We were looking in @path but it wasn't there. If Kalastatic is living somewhere else you can set the location on the @link.", $replacements) . '</p>',
-      );
-
-      return $page;
+    else {
+      // Kalastatic isn't building to where it's supposed to be so output a nice
+      // message.
+      $output = $this->kalastaticNotFoundMessage();
     }
+
+    return $output;
+  }
+
+  /**
+   * Kalastatic isn't building to where it's supposed to be so output a nice
+   * message.
+   */
+  public function kalastaticNotFoundMessage() {
+    $link_path = Url::fromRoute('kalastatic.settings');
+    $link_text = t('Kalastatic settings page');
+    $replacements = array(
+      '@path' => '\'' . $this->getBuildPath() . '\'',
+      '@link' => $this->l($link_text, $link_path),
+    );
+
+    return array(
+      '#type' => 'markup',
+      '#markup' => '<h2>' . t('Kalastatic build could not be found!') . '</h2><p>' . t("We were looking in @path but it wasn't there. If Kalastatic is living somewhere else you can set the location on the @link.", $replacements) . '</p>',
+    );
+  }
+
+  /**
+   * Throw a 404 and set a message.
+   */
+  public function pathNotFound() {
+    drupal_set_message(t('The requested page could not be found inside Kalastatic'), 'error');
+    throw new NotFoundHttpException();
   }
 
   /**
