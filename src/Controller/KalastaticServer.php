@@ -19,7 +19,6 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class KalastaticServer extends ControllerBase {
   public function content() {
-    xdebug_break();
     $build_path = $this->getBuildPath();
 
     // Get an array of the url args.
@@ -108,7 +107,7 @@ class KalastaticServer extends ControllerBase {
   /**
    * Return the path to the Kalastatic project relative to the site root.
    */
-  public function getFilePath() {
+  public static function getSrcPath() {
     // If the path variable is set then use that, otherwise assume a default
     // inside the current theme.
     $path = \Drupal::config('kalastatic.settings')->get('kalastatic_src_path');
@@ -118,7 +117,7 @@ class KalastaticServer extends ControllerBase {
   /**
    * Return the path to the built prototype relative to the site root.
    */
-  public function getBuildPath() {
+  public static function getBuildPath() {
     // If the path variable is set then use that, otherwise assume a default
     // inside the current theme.
     $path = \Drupal::config('kalastatic.settings')->get('kalastatic_build_path');

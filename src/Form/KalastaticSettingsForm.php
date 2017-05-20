@@ -10,6 +10,8 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\Component\Serialization\Yaml;
+use Drupal\kalastatic\Controller\KalastaticServer;
 
 /**
  * Configure example settings for this site.
@@ -79,6 +81,17 @@ class KalastaticSettingsForm extends ConfigFormBase {
         ),
       ),
     );
+
+    // This is how you read in a yml file but it only works if we put a symlink
+    // out of the project root into the Kalastatic root.
+    $settings_path = KalastaticServer::getSrcPath() . '/kalastatic.yaml';
+    $yml = Yaml::decode(file_get_contents($settings_path));
+    if (!empty($yml)) {
+      $form['settings'] = [
+        '#prefix' => '<h2>Settings from Kalastatic.yaml</h2>',
+        '#markup' => '<pre>' . print_r($yml, TRUE) . '</pre>',
+      ];
+    }
 
     return parent::buildForm($form, $form_state);
   }
