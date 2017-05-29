@@ -338,9 +338,18 @@ function kalastatic_path_to_kalastatic_html() {
  */
 function kalastatic_twigshim_loader($loader) {
   $source = kalastatic_path_to_kalastatic() . '/src';
-  if (is_dir($source)) {
-    // Add the namespaced path for the KalaStatic source.
-    $loader->addPath(kalastatic_path_to_kalastatic() . '/src', 'kalastatic');
+  $namespaces = array(
+    'kalastatic' => $source,
+    'atoms' => $source . '/components/atoms',
+    'molecules' => $source . '/components/molecules',
+    'organisms' => $source . '/components/organisms',
+    'layouts' => $source . '/components/layouts',
+  );
+  foreach ($namespaces as $namespace => $path) {
+    if (is_dir($path)) {
+      // Add the namespaced path for the KalaStatic source.
+      $loader->addPath($path, $namespace);
+    }
   }
 }
 
