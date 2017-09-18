@@ -6,5 +6,26 @@ type: module
 core: 8.x
 
 dependencies:
+  - components
 
 configure: kalastatic.settings
+
+component-libraries:
+  kstat:
+    paths:
+      - kalastatic/src
+  kalastatic:
+    paths:
+      - kalastatic/src
+  atoms:
+    paths:
+      - kalastatic/src/components/atoms
+  molecules:
+    paths:
+      - kalastatic/src/components/molecules
+  organisms:
+    paths:
+      - kalastatic/src/components/organisms
+  layouts:
+    paths:
+      - kalastatic/src/components/layouts
