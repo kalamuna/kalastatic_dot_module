@@ -55,7 +55,7 @@ function kalastatic_path_to_src_default() {
 
 /**
  * Return the path to the default build folder. This assumption is based on what
- * Kalastatic does if not build path is set in kalastatic.yaml file.
+ * Kalastatic does if no build path is set in kalastatic.yaml file.
  */
 function kalastatic_path_to_build_default() {
   return kalastatic_path_to_src_default() . '/build';
