@@ -1,5 +1,7 @@
 <?php
-use Drupal\image\Entity\ImageStyle;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Yaml\Dumper;
 
 /**
  * Implements hook_library_info_build().
@@ -73,4 +75,46 @@ function kalastatic_preprocess_html(&$variables) {
     // TODO Figure out the true destination path from kalastatic.yaml.
     $variables['build_path'] = base_path() . 'kalastatic/';
   }
+}
+
+/**
+ * Get Kalastatic settings from kalastatic.yaml file.
+ */
+function kalastatic_get_settings($drupal_root_paths = TRUE) {
+  // Find a kalastatic.yaml file.
+  $finder = new Finder();
+  $iterator = $finder
+    ->name('kalastatic.yaml')
+    ->in('..');
+
+  // Hopefully there's only one :/
+  $settings = [];
+  foreach ($iterator as $file_path => $file) {
+    $yaml = new Parser();
+    $settings = $yaml->parse(file_get_contents($file_path));
+  }
+  return $drupal_root_paths ? kalastatic_drupal_root_paths($settings) : $settings;
+}
+
+/**
+ * If we are dealing with a composer project where Drupal is nested one
+ * folder deep in the project the paths defined in kalastatic.yaml will have 1
+ * more arg than Drupal knows about so we need to remove it.
+ */
+function kalastatic_drupal_root_paths($settings) {
+  $root_args = explode('/', DRUPAL_ROOT);
+  $drupal_parent = end($root_args);
+  $adjust = ['source', 'destination'];
+  foreach ($settings as $setting => $path) {
+    if (in_array($setting, $adjust)) {
+      $path_args = explode('/', $path);
+      $prefix = reset($path_args);
+      if ($prefix == $drupal_parent) {
+        // We add 1 to get rid of a preceding slash.
+        $length = strlen($prefix) + 1;
+        $settings[$setting] = substr($path, $length);
+      }
+    }
+  }
+  return $settings;
 }
