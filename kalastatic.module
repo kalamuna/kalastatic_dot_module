@@ -65,7 +65,8 @@ function kalastatic_path_to_build_default() {
  * Get Kalastatic settings from kalastatic.yaml file.
  */
 function kalastatic_get_settings($drupal_root_paths = TRUE) {
-  // Find a kalastatic.yaml file.
+  // Find a kalastatic.yaml file. We start by looking 1 level higher than Drupal
+  // root to handle Composer builds.
   $finder = new Finder();
   $iterator = $finder
     ->name('kalastatic.yaml')
