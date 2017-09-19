@@ -35,7 +35,7 @@ class KalastaticSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('kalastatic.settings');
+    $settings = kalastatic_get_settings();
 
     $github_url = 'https://github.com/kalamuna/kalastatic';
     $github_link = Link::fromTextAndUrl($github_url, Url::fromUri($github_url))->toString();
@@ -51,11 +51,11 @@ class KalastaticSettingsForm extends ConfigFormBase {
         '#collapsed' => FALSE,
         'kalastatic_src_path' => array(
           '#prefix' => '<h3>' . $this->t('Source Path') . ':</h3>',
-          '#markup' => '<pre>' . $config->get('kalastatic_src_path') . '</pre>',
+          '#markup' => '<pre>' . $settings['source'] . '</pre>',
         ),
         'kalastatic_build_path' => array(
           '#prefix' => '<h3>' . $this->t('Build Path') . ':</h3>',
-          '#markup' => '<pre>' . $config->get('kalastatic_build_path') . '</pre>',
+          '#markup' => '<pre>' . $settings['destination'] . '</pre>',
         ),
       ),
     );
