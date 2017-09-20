@@ -207,3 +207,17 @@ function kalastatic_drupal_root_paths($settings) {
   }
   return $settings;
 }
+
+/**
+ * Define a list of namespaces and their paths relative to Kalastatic source.
+ */
+function kalastatic_namespaces() {
+  return [
+    'kstat' => 'src',
+    'kalastatic' => 'src',
+    'atoms' => 'src/components/atoms',
+    'molecules' => 'src/components/molecules',
+    'organisms' => 'src/components/organisms',
+    'layouts' => 'src/components/layouts',
+  ];
+}
