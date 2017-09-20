@@ -7,11 +7,8 @@ use Symfony\Component\Yaml\Dumper;
  * Implements hook_library_info_build().
  */
 function kalastatic_library_info_build() {
-  $build_file_path = \Drupal::config('kalastatic.settings')->get('kalastatic_build_path');
-  $build_path = str_replace(DRUPAL_ROOT, '', $build_file_path);
-
   $libraries = [];
-  $libraries['kalastatic'] = [
+  $libraries['css-js'] = [
     'dependencies' => [
       'core/jquery',
     ],
@@ -20,26 +17,63 @@ function kalastatic_library_info_build() {
       'url' => 'https://opensource.org/licenses/MIT',
       'gpl-compatible' => TRUE,
     ],
-    'css' => [
-      'theme' => [
-        $build_path . '/styles/main.css' => [],
-      ],
-    ],
   ];
 
-  // Go through all the js files in the js folder and add them as part of the
-  // library.
-  $js_path = $build_path . '/js';
-  foreach (scandir($js_path) as $key => $filename) {
-    if (preg_match('/^.*\.(js)$/i', $filename)) {
-      $libraries['kalastatic']['js'][$js_path . '/' . $filename] = [
-        'type' => 'internal',
-        'minified' => FALSE,
-      ];
+  global $base_path;
+  $settings = kalastatic_get_settings();
+  $build_path = $base_path . $settings['destination'];
+
+  // Find Kalastatic's config.metadata file.
+  $finder = new Finder();
+  $iterator = $finder
+    ->name('config.metadata')
+    ->in($settings['source']);
+
+  // This file is markdown with yaml front matter so we need to massage it a bit
+  // to parse the yaml.
+  $ks_config = [];
+  foreach ($iterator as $file_path => $file) {
+    $yaml = new Parser();
+    $file_contents = file_get_contents($file_path);
+    $yaml_only = str_replace('---', '', $file_contents);
+    $ks_config = $yaml->parse($yaml_only);
+  }
+
+  // Build and array of css file paths.
+  $css = [];
+  foreach ($ks_config['stylesheets'] as $css_path) {
+    $css[$build_path . '/' . $css_path] = [];
+  }
+
+  // Build and array of js file paths.
+  $js = [];
+  foreach ($ks_config['scripts']['footer'] as $js_path) {
+    // Don't pull in the special files we built to handle Drupal compatibility
+    // on the Kalastatic side.
+    $disallowed = strpos($js_path, 'drupal_pre') || strpos($js_path, 'drupal_post');
+    if (!$disallowed) {
+      $js[$build_path . '/' . $js_path] = [];
     }
   }
 
+  // Add the css and js to the library.
+  $libraries['css-js'] += [
+    'css' => [
+      'theme' => $css,
+    ],
+    'js' => $js,
+  ];
   return $libraries;
+}
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * @param array $attachments
+ */
+function kalastatic_page_attachments(array &$attachments){
+  // Attach library to page.
+  $attachments['#attached']['library'][] = 'kalastatic/css-js';
 }
 
 /**
