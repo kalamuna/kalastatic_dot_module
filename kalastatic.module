@@ -1,12 +1,23 @@
 <?php
+
+/**
+ * @file
+ * Contains kalastatic.module.
+ */
+
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Parser;
-use Symfony\Component\Yaml\Dumper;
 
 /**
  * Implements hook_library_info_build().
  */
 function kalastatic_library_info_build() {
+  global $base_path;
+  $settings = kalastatic_get_settings('settings');
+  $config = kalastatic_get_settings('config');
+  $build_path = $base_path . $settings['destination'];
+
+  // Some library metadata.
   $libraries = [];
   $libraries['css-js'] = [
     'dependencies' => [
@@ -19,35 +30,15 @@ function kalastatic_library_info_build() {
     ],
   ];
 
-  global $base_path;
-  $settings = kalastatic_get_settings();
-  $build_path = $base_path . $settings['destination'];
-
-  // Find Kalastatic's config.metadata file.
-  $finder = new Finder();
-  $iterator = $finder
-    ->name('config.metadata')
-    ->in($settings['source']);
-
-  // This file is markdown with yaml front matter so we need to massage it a bit
-  // to parse the yaml.
-  $ks_config = [];
-  foreach ($iterator as $file_path => $file) {
-    $yaml = new Parser();
-    $file_contents = file_get_contents($file_path);
-    $yaml_only = str_replace('---', '', $file_contents);
-    $ks_config = $yaml->parse($yaml_only);
-  }
-
   // Build and array of css file paths.
   $css = [];
-  foreach ($ks_config['stylesheets'] as $css_path) {
+  foreach ($config['stylesheets'] as $css_path) {
     $css[$build_path . '/' . $css_path] = [];
   }
 
   // Build and array of js file paths.
   $js = [];
-  foreach ($ks_config['scripts']['footer'] as $js_path) {
+  foreach ($config['scripts']['footer'] as $js_path) {
     // Don't pull in the special files we built to handle Drupal compatibility
     // on the Kalastatic side.
     $disallowed = strpos($js_path, 'drupal_pre') || strpos($js_path, 'drupal_post');
@@ -68,23 +59,22 @@ function kalastatic_library_info_build() {
 
 /**
  * Implements hook_page_attachments().
- *
- * @param array $attachments
  */
-function kalastatic_page_attachments(array &$attachments){
+function kalastatic_page_attachments(array &$attachments) {
   // Attach library to page.
   $attachments['#attached']['library'][] = 'kalastatic/css-js';
+}
 
 /**
  * Implements hook_rebuild().
  */
-function kalastatic_rebuild(){
+function kalastatic_rebuild() {
   // Warm the settings cache.
   kalastatic_get_settings();
 }
 
 /**
- * Return the default path to Kalastatic
+ * Return the default path to Kalastatic.
  *
  * The assumption is that it is inside a folder called 'kalastatic' in the
  * current default theme. This assumption is based on convention.
@@ -95,18 +85,21 @@ function kalastatic_path_to_src_default() {
 }
 
 /**
- * Return the path to the default build folder. This assumption is based on what
- * Kalastatic does if no build path is set in kalastatic.yaml file.
+ * Return the path to the default build folder.
+ *
+ * This assumption is based on what Kalastatic does if no build path is set in
+ * kalastatic.yaml file.
  */
 function kalastatic_path_to_build_default() {
   return kalastatic_path_to_src_default() . '/build';
 }
 
 /**
- * Get Kalastatic settings from cache or, if it doesn't exist then hit
- * kalastatic.yaml file.
+ * Get Kalastatic settings from cache.
+ *
+ * Alternatively, if it doesn't exist then hit kalastatic.yaml file.
  */
-function kalastatic_get_settings($drupal_root_paths = TRUE) {
+function kalastatic_get_settings($type = 'yaml', $drupal_root_paths = TRUE) {
   $cid = 'kalastatic_yaml';
   $data = NULL;
   if ($cache = \Drupal::cache('discovery')->get($cid)) {
@@ -115,14 +108,49 @@ function kalastatic_get_settings($drupal_root_paths = TRUE) {
   }
   else {
     // We have no cache so hit the file system.
-    $data = kalastatic_get_kalastatic_yaml();
-
+    $data['yaml'] = kalastatic_get_kalastatic_yaml();
+    $data['config'] = kalastatic_get_kalastatic_config();
     \Drupal::cache('discovery')->set($cid, $data);
   }
 
-  // We're assuming most functions want paths relative to Drupal root but they
-  // have the option to return the paths without manipulation--just in case.
-  return $drupal_root_paths ? kalastatic_drupal_root_paths($data) : $data;
+  $settings = [];
+  switch ($type) {
+    case 'yaml':
+      // We're assuming most functions want paths relative to Drupal root but
+      // they have the option to return the paths without manipulation--just in
+      // case.
+      $settings = $drupal_root_paths ? kalastatic_drupal_root_paths($data['yaml']) : $data['yaml'];
+      break;
+
+    case 'config':
+      $settings = $data['config'];
+      break;
+  }
+
+  return $settings;
+}
+
+/**
+ * Get Kalastatic settings from kalastatic.yaml file.
+ */
+function kalastatic_get_kalastatic_config() {
+  // Find Kalastatic's config.metadata file.
+  $settings = kalastatic_get_settings();
+  $finder = new Finder();
+  $iterator = $finder
+    ->name('config.metadata')
+    ->in($settings['source']);
+
+  // This file is markdown with yaml front matter so we need to massage it a bit
+  // to parse the yaml.
+  $config = [];
+  foreach ($iterator as $file_path => $file) {
+    $yaml = new Parser();
+    $file_contents = file_get_contents($file_path);
+    $yaml_only = str_replace('---', '', $file_contents);
+    $config = $yaml->parse($yaml_only);
+  }
+  return $config;
 }
 
 /**
@@ -136,7 +164,7 @@ function kalastatic_get_kalastatic_yaml() {
     ->name('kalastatic.yaml')
     ->in('..');
 
-  // Hopefully there's only one :/
+  // Hopefully there's only one.
   $settings = [];
   foreach ($iterator as $file_path => $file) {
     $yaml = new Parser();
@@ -156,6 +184,8 @@ function kalastatic_get_kalastatic_yaml() {
 }
 
 /**
+ * Mangle paths for Drupal.
+ *
  * If we are dealing with a composer project where Drupal is nested one
  * folder deep in the project the paths defined in kalastatic.yaml will have 1
  * more arg than Drupal knows about so we need to remove it.
