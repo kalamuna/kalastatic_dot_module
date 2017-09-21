@@ -3,3 +3,8 @@ services:
     class: Drupal\kalastatic\PathProcessor\KalastaticPathProcessor
     tags:
       - { name: path_processor_inbound, priority: 250 }
+  twig.loader.kalastatic_namespaces:
+    class: Drupal\kalastatic\Template\Loader\KalastaticLibraryLoader
+    arguments: ['@app.root', '@module_handler', '@theme_handler']
+    tags:
+      - { name: twig.loader, priority: 200 }
