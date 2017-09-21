@@ -1,5 +1,0 @@
-name = Kalastatic
-description = Drupal integration module for the Kalastatic prototyping and styleguide tool
-configure = admin/config/kalastatic
-core = 7.x
-package = Kalastatic

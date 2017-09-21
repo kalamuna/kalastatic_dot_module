@@ -4,14 +4,6 @@
  * Implements hook_install().
  */
 function kalastatic_install() {
-  // Set default values for config which require dynamic values.
-  $settings = \Drupal::configFactory()->getEditable('kalastatic.settings');
-
-  // Path to Kalastatic src files.
-  $settings->set('kalastatic_src_path', kalastatic_path_to_src_default())
-    ->save();
-
-  // Path to Kalastatic build folder.
-  $settings->set('kalastatic_build_path', kalastatic_path_to_build_default())
-    ->save();
+  // Warm the settings cache.
+  kalastatic_get_settings();
 }

@@ -35,33 +35,27 @@ class KalastaticSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('kalastatic.settings');
+    $settings = kalastatic_get_settings();
 
     $github_url = 'https://github.com/kalamuna/kalastatic';
     $github_link = Link::fromTextAndUrl($github_url, Url::fromUri($github_url))->toString();
 
     $form = array(
       'description' => array(
-        '#markup' => '<p>' . t('Static site framework for prototyping and building out CMS-less websites. See @link for more details.', array('@link' => $github_link)) . '</p>',
+        '#markup' => '<p>' . t('Static site framework for building out prototypes and styleguides. See @link for more details.', array('@link' => $github_link)) . '</p>',
       ),
       'kalastatic_src_path_wrap' => array(
         '#type' => 'fieldset',
-        '#title' => t('Kalastatic Paths'),
+        '#title' => t('Kalastatic'),
         '#collapsible' => FALSE,
         '#collapsed' => FALSE,
         'kalastatic_src_path' => array(
-          '#type' => 'textfield',
-          '#title' => $this->t('Source Path'),
-          '#default_value' => $config->get('kalastatic_src_path'),
-          '#size' => 60,
-          '#description' => t("Provide the path to Kalastatic, relative to Drupal root. If no path is supplied then it will be assumed that Kalastatic is inside a folder called 'kalastatic' in the root of the currently enabled theme."),
+          '#prefix' => '<h3>' . $this->t('Source Path') . ':</h3>',
+          '#markup' => '<pre>' . $settings['source'] . '</pre>',
         ),
         'kalastatic_build_path' => array(
-          '#type' => 'textfield',
-          '#title' => $this->t('Build Path'),
-          '#default_value' => $config->get('kalastatic_build_path'),
-          '#size' => 60,
-          '#description' => t("Provide the path to the Kalastatic build folder, relative to the Drupal root. Defaults to the 'build' subfolder of the src path."),
+          '#prefix' => '<h3>' . $this->t('Build Path') . ':</h3>',
+          '#markup' => '<pre>' . $settings['destination'] . '</pre>',
         ),
       ),
     );
