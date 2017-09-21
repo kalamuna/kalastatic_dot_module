@@ -9,11 +9,23 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Parser;
 
 /**
+ * Define a list of namespaces and their paths relative to Kalastatic source.
+ */
+const KALASTATIC_NAMESPACES = [
+  'kstat' => '',
+  'kalastatic' => '',
+  'atoms' => 'components/atoms',
+  'molecules' => 'components/molecules',
+  'organisms' => 'components/organisms',
+  'layouts' => 'components/layouts',
+];
+
+/**
  * Implements hook_library_info_build().
  */
 function kalastatic_library_info_build() {
   global $base_path;
-  $settings = kalastatic_get_settings('settings');
+  $settings = kalastatic_get_settings('yaml');
   $config = kalastatic_get_settings('config');
   $build_path = $base_path . $settings['destination'];
 
@@ -102,6 +114,7 @@ function kalastatic_path_to_build_default() {
 function kalastatic_get_settings($type = 'yaml', $drupal_root_paths = TRUE) {
   $cid = 'kalastatic_yaml';
   $data = NULL;
+  $refresh_config = FALSE;
   if ($cache = \Drupal::cache('discovery')->get($cid)) {
     // We have cache, return it now dammit!
     $data = $cache->data;
@@ -109,7 +122,6 @@ function kalastatic_get_settings($type = 'yaml', $drupal_root_paths = TRUE) {
   else {
     // We have no cache so hit the file system.
     $data['yaml'] = kalastatic_get_kalastatic_yaml();
-    $data['config'] = kalastatic_get_kalastatic_config();
     \Drupal::cache('discovery')->set($cid, $data);
   }
 
@@ -123,7 +135,11 @@ function kalastatic_get_settings($type = 'yaml', $drupal_root_paths = TRUE) {
       break;
 
     case 'config':
-      $settings = $data['config'];
+      // Also referesh the config. Note that this relys on the data in
+      // kalastatic.yaml so we need t make sure we have that first or we'll get
+      // stuck in a loop.
+      $settings = kalastatic_get_kalastatic_config($settings);
+      \Drupal::cache('discovery')->set($cid, $data);
       break;
   }
 
@@ -133,9 +149,9 @@ function kalastatic_get_settings($type = 'yaml', $drupal_root_paths = TRUE) {
 /**
  * Get Kalastatic settings from kalastatic.yaml file.
  */
-function kalastatic_get_kalastatic_config() {
+function kalastatic_get_kalastatic_config($settings = []) {
   // Find Kalastatic's config.metadata file.
-  $settings = kalastatic_get_settings();
+  $settings = empty($settings) ? kalastatic_get_settings() : $settings;
   $finder = new Finder();
   $iterator = $finder
     ->name('config.metadata')
@@ -206,18 +222,4 @@ function kalastatic_drupal_root_paths($settings) {
     }
   }
   return $settings;
-}
-
-/**
- * Define a list of namespaces and their paths relative to Kalastatic source.
- */
-function kalastatic_namespaces() {
-  return [
-    'kstat' => 'src',
-    'kalastatic' => 'src',
-    'atoms' => 'src/components/atoms',
-    'molecules' => 'src/components/molecules',
-    'organisms' => 'src/components/organisms',
-    'layouts' => 'src/components/layouts',
-  ];
 }

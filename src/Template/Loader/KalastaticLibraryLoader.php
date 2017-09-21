@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\components\Template\Loader;
+namespace Drupal\kalastatic\Template\Loader;
 
 /**
  * Loads templates from the filesystem.
@@ -8,14 +8,26 @@ namespace Drupal\components\Template\Loader;
  * This loader adds Kalastatic specific paths as namespaces to the Twig
  * filesystem loader so that templates can be referenced by namespace.
  */
-class ComponentLibraryLoader extends \Twig_Loader_Filesystem {
+class KalastaticLibraryLoader extends \Twig_Loader_Filesystem {
+
+  // Keep track of libraries that we attempt to register.
+  protected $libraries = [];
+
   /**
    * Constructs a new ComponentsLoader object.
    */
   public function __construct() {
     // Register the namespace paths.
-    foreach (kalastatic_namespaces() as $namespace => $path) {
-      $this->addPath($path, $namespace);
+    $settings = kalastatic_get_settings();
+    foreach (KALASTATIC_NAMESPACES as $namespace => $path) {
+      $this->libraries[] = [
+        'type' => 'module',
+        'name' => 'kalastatic',
+        'namespace' => $namespace,
+        'paths' => $path,
+        'error' => FALSE
+      ];
+      $this->addPath($settings['source'] . '/' . $path, $namespace);
     }
   }
 
