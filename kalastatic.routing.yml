@@ -5,6 +5,14 @@ kalastatic.settings:
   requirements:
     _permission: 'configure kalastatic'
 
+kalastatic.assets:
+  path: '/admin/config/kalastatic/assets'
+  defaults:
+    _controller: '\Drupal\kalastatic\Controller\KalastaticAssets::content'
+    _title: 'Kalastatic'
+  requirements:
+    _permission: 'access content'
+
 kalastatic.prototype:
   path: '/kalastatic/prototype/{path}'
   defaults:
