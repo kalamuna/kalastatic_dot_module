@@ -8,3 +8,9 @@ services:
     class: Drupal\kalastatic\Template\Loader\KalastaticLibraryLoader
     tags:
       - { name: twig.loader, priority: 300 }
+
+  kalastatic.asset_loader:
+    class: Drupal\kalastatic\Controller\KalastaticAssets
+    arguments: ['@app.root', '@module_handler', '@theme_handler']
+    tags:
+      - { name: path_processor_inbound, priority: 250 }
