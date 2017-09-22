@@ -2,45 +2,6 @@
 use Drupal\image\Entity\ImageStyle;
 
 /**
- * Implements hook_library_info_build().
- */
-function kalastatic_library_info_build() {
-  $build_file_path = \Drupal::config('kalastatic.settings')->get('kalastatic_build_path');
-  $build_path = str_replace(DRUPAL_ROOT, '', $build_file_path);
-
-  $libraries = [];
-  $libraries['kalastatic'] = [
-    'dependencies' => [
-      'core/jquery',
-    ],
-    'license' => [
-      'name' => 'MIT',
-      'url' => 'https://opensource.org/licenses/MIT',
-      'gpl-compatible' => TRUE,
-    ],
-    'css' => [
-      'theme' => [
-        $build_path . '/styles/main.css' => [],
-      ],
-    ],
-  ];
-
-  // Go through all the js files in the js folder and add them as part of the
-  // library.
-  $js_path = $build_path . '/js';
-  foreach (scandir($js_path) as $key => $filename) {
-    if (preg_match('/^.*\.(js)$/i', $filename)) {
-      $libraries['kalastatic']['js'][$js_path . '/' . $filename] = [
-        'type' => 'internal',
-        'minified' => FALSE,
-      ];
-    }
-  }
-
-  return $libraries;
-}
-
-/**
  * Return the default path to Kalastatic
  *
  * The assumption is that it is inside a folder called 'kalastatic' in the
