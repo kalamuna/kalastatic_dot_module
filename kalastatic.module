@@ -252,9 +252,14 @@ function kalastatic_page_attachments_alter(array &$page) {
 }
 
 /**
- * Add tags to the header, mainly for favicons.
+ * Add tags to the header for favicons.
  */
 function _kalastatic_favicon_head_tags(array &$page) {
+  // Pull the brand color from saved settings.
+  $config = \Drupal::config('kalastatic.settings');
+  $brand_color = $config->get('kalastatic_brand_color');
+
+  // Get kalastatic.yaml settings so we can find the images.
   $settings = kalastatic_get_settings();
   $dest = '/' . $settings['destination'];
   $apple_touch_icon = [
@@ -308,7 +313,7 @@ function _kalastatic_favicon_head_tags(array &$page) {
     '#attributes' => [
       'href' => $dest . '/images/favicon/safari-pinned-tab.svg',
       'rel' => 'mask-icon',
-      'color' => '#058488',
+      'color' => $brand_color,
     ],
   ];
   $page['#attached']['html_head'][] = [$mask_icon, 'mask-icon'];
@@ -337,7 +342,7 @@ function _kalastatic_favicon_head_tags(array &$page) {
     '#type' => 'html_tag',
     '#tag' => 'meta',
     '#attributes' => [
-      'content' => '#058488',
+      'content' => $brand_color,
       'name' => 'theme-color',
     ],
   ];
