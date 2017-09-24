@@ -123,8 +123,8 @@ function kalastatic_get_settings($type = 'yaml', $adjust_path_roots = TRUE) {
       break;
 
     case 'config':
-      // Also referesh the config. Note that this relys on the data in
-      // kalastatic.yaml so we need t make sure we have that first or we'll get
+      // Also refresh the config. Note that this relies on the data in
+      // kalastatic.yaml so we need to make sure we have that first or we'll get
       // stuck in a loop.
       $settings = kalastatic_get_kalastatic_config($settings);
       \Drupal::cache('discovery')->set($cid, $data);
