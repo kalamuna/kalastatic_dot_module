@@ -102,7 +102,6 @@ function kalastatic_path_to_build_default() {
 function kalastatic_get_settings($type = 'yaml', $adjust_path_roots = TRUE) {
   $cid = 'kalastatic_yaml';
   $data = NULL;
-  $refresh_config = FALSE;
   if ($cache = \Drupal::cache('discovery')->get($cid)) {
     // We have cache, return it now dammit!
     $data = $cache->data;
