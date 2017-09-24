@@ -126,7 +126,6 @@ function kalastatic_get_settings($type = 'yaml', $adjust_path_roots = TRUE) {
       // kalastatic.yaml so we need t make sure we have that first or we'll get
       // stuck in a loop.
       $settings = kalastatic_get_kalastatic_config($settings);
-      \Drupal::cache('discovery')->set($cid, $data);
       break;
   }
 
