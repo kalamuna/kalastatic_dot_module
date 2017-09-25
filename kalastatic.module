@@ -246,15 +246,12 @@ function kalastatic_page_attachments_alter(array &$page) {
       unset($page['#attached']['html_head_link'][$key]);
     }
   }
-
-  // Handle custom favicons.
-  _kalastatic_favicon_head_tags($page);
 }
 
 /**
- * Add tags to the header for favicons.
+ * Implements hook_page_attachments().
  */
-function _kalastatic_favicon_head_tags(array &$page) {
+function kalastatic_page_attachments(array &$attachments) {
   // Pull the brand color from saved settings.
   $config = \Drupal::config('kalastatic.settings');
   $brand_color = $config->get('kalastatic_brand_color');
@@ -262,6 +259,8 @@ function _kalastatic_favicon_head_tags(array &$page) {
   // Get kalastatic.yaml settings so we can find the images.
   $settings = kalastatic_get_settings();
   $dest = '/' . $settings['destination'];
+
+  // Set up tags for the favicons.
   $apple_touch_icon = [
     '#type' => 'html_tag',
     '#tag' => 'link',
@@ -271,7 +270,7 @@ function _kalastatic_favicon_head_tags(array &$page) {
       'sizes' => '180x180',
     ],
   ];
-  $page['#attached']['html_head'][] = [$apple_touch_icon, 'apple_touch_icon'];
+  $attachments['#attached']['html_head'][] = [$apple_touch_icon, 'apple_touch_icon'];
 
   $favicon_32x32 = [
     '#type' => 'html_tag',
@@ -283,7 +282,7 @@ function _kalastatic_favicon_head_tags(array &$page) {
       'type' => 'image/png',
     ],
   ];
-  $page['#attached']['html_head'][] = [$favicon_32x32, 'favicon_32x32'];
+  $attachments['#attached']['html_head'][] = [$favicon_32x32, 'favicon_32x32'];
 
   $favicon_16x16 = [
     '#type' => 'html_tag',
@@ -295,7 +294,7 @@ function _kalastatic_favicon_head_tags(array &$page) {
       'type' => 'image/png',
     ],
   ];
-  $page['#attached']['html_head'][] = [$favicon_16x16, 'favicon_16x16'];
+  $attachments['#attached']['html_head'][] = [$favicon_16x16, 'favicon_16x16'];
 
   $manifest = [
     '#type' => 'html_tag',
@@ -305,7 +304,7 @@ function _kalastatic_favicon_head_tags(array &$page) {
       'rel' => 'manifest',
     ],
   ];
-  $page['#attached']['html_head'][] = [$manifest, 'manifest'];
+  $attachments['#attached']['html_head'][] = [$manifest, 'manifest'];
 
   $mask_icon = [
     '#type' => 'html_tag',
@@ -316,7 +315,7 @@ function _kalastatic_favicon_head_tags(array &$page) {
       'color' => $brand_color,
     ],
   ];
-  $page['#attached']['html_head'][] = [$mask_icon, 'mask-icon'];
+  $attachments['#attached']['html_head'][] = [$mask_icon, 'mask-icon'];
 
   $shortcut_icon = [
     '#type' => 'html_tag',
@@ -326,7 +325,7 @@ function _kalastatic_favicon_head_tags(array &$page) {
       'rel' => 'shortcut icon',
     ],
   ];
-  $page['#attached']['html_head'][] = [$shortcut_icon, 'shortcut icon'];
+  $attachments['#attached']['html_head'][] = [$shortcut_icon, 'shortcut icon'];
 
   $msapplication_config = [
     '#type' => 'html_tag',
@@ -336,7 +335,7 @@ function _kalastatic_favicon_head_tags(array &$page) {
       'name' => 'msapplication-config',
     ],
   ];
-  $page['#attached']['html_head'][] = [$msapplication_config, 'msapplication_config'];
+  $attachments['#attached']['html_head'][] = [$msapplication_config, 'msapplication_config'];
 
   $theme_color = [
     '#type' => 'html_tag',
@@ -346,5 +345,5 @@ function _kalastatic_favicon_head_tags(array &$page) {
       'name' => 'theme-color',
     ],
   ];
-  $page['#attached']['html_head'][] = [$theme_color, 'theme_color'];
+  $attachments['#attached']['html_head'][] = [$theme_color, 'theme_color'];
 }
