@@ -5,6 +5,5 @@
  */
 function kalastatic_install() {
   // Warm the settings cache.
-  kalastatic_get_settings('yaml');
   kalastatic_get_settings('config');
 }
