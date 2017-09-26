@@ -5,7 +5,7 @@
  */
 function kalastatic_install() {
   // Warm the settings cache.
-  kalastatic_get_settings('config');
+  kalastatic_get_settings();
 
   // Set default values for config.
   $settings = \Drupal::configFactory()->getEditable('kalastatic.settings');

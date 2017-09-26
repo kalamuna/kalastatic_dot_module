@@ -63,6 +63,9 @@ function kalastatic_library_info_build() {
 function kalastatic_page_attachments(array &$attachments) {
   // Attach library to page.
   $attachments['#attached']['library'][] = 'kalastatic/css-js';
+
+  // Add favicon tags to head.
+  _kalastatic_favicons($attachments);
 }
 
 /**
@@ -70,7 +73,7 @@ function kalastatic_page_attachments(array &$attachments) {
  */
 function kalastatic_rebuild() {
   // Warm the settings cache.
-  kalastatic_get_settings('config');
+  kalastatic_get_settings();
 }
 
 /**
@@ -107,7 +110,7 @@ function kalastatic_path_to_build_default() {
  * @return array
  *   An array of info from Kalastatic from the file requested.
  */
-function kalastatic_get_settings($type = 'yaml', $adjust_path_roots = TRUE) {
+function kalastatic_get_settings(string $type = '') {
   $cid = 'kalastatic_yaml';
   $data = NULL;
   if ($cache = \Drupal::cache('discovery')->get($cid)) {
@@ -116,30 +119,12 @@ function kalastatic_get_settings($type = 'yaml', $adjust_path_roots = TRUE) {
   }
   else {
     // We have no cache so hit the file system.
-    $data['yaml'] = kalastatic_get_kalastatic_yaml();
+    $yaml = kalastatic_get_kalastatic_yaml();
+    $data['yaml'] = kalastatic_adjust_path_root($yaml);
+    $data['config'] = kalastatic_get_kalastatic_config($data['yaml']);
     \Drupal::cache('discovery')->set($cid, $data);
   }
-
-  $settings = [];
-  switch ($type) {
-    case 'yaml':
-      // We're assuming most functions want paths relative to Drupal root but
-      // they have the option to return the paths without manipulation--just in
-      // case.
-      $settings = $adjust_path_roots ? kalastatic_adjust_path_root($data['yaml']) : $data['yaml'];
-      break;
-
-    case 'config':
-      // Also refresh the config. Note that this relies on the data in
-      // kalastatic.yaml so we need to make sure we have that first or we'll get
-      // stuck in a loop.
-      $yaml = kalastatic_adjust_path_root($data['yaml']);
-      $data['config'] = kalastatic_get_kalastatic_config($yaml);
-      \Drupal::cache('discovery')->set($cid, $data);
-      $settings = $data['config'];
-      break;
-  }
-  return $settings;
+  return $type ? $data[$type] : $data;
 }
 
 /**
@@ -239,7 +224,7 @@ function kalastatic_drupal_root_path($path) {
  * Pull the Twig name spaces from kalastatic.yaml file.
  */
 function kalastatic_get_namespaces() {
-  $settings = kalastatic_get_settings();
+  $settings = kalastatic_get_settings('yaml');
   return $settings['pluginOpts']['metalsmith-jstransformer']['engineOptions']['twig']['namespaces'];
 }
 
@@ -257,9 +242,9 @@ function kalastatic_page_attachments_alter(array &$page) {
 }
 
 /**
- * Implements hook_page_attachments().
+ * Add favicon tags to the head.
  */
-function kalastatic_page_attachments(array &$attachments) {
+function _kalastatic_favicons(array &$attachments) {
   // Pull the brand color from saved settings.
   $config = \Drupal::config('kalastatic.settings');
   $brand_color = $config->get('kalastatic_brand_color');
