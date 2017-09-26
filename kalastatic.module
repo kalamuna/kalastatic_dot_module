@@ -122,11 +122,20 @@ function kalastatic_get_settings($type = 'yaml', $adjust_path_roots = TRUE) {
       break;
 
     case 'config':
-      // Also refresh the config. Note that this relies on the data in
-      // kalastatic.yaml so we need to make sure we have that first or we'll get
+      // Also referesh the config. Note that this relys on the data in
+      // kalastatic.yaml so we need t make sure we have that first or we'll get
       // stuck in a loop.
-      $settings = kalastatic_get_kalastatic_config($settings);
+      $yaml = kalastatic_adjust_path_root($data['yaml']);
+      $data['config'] = kalastatic_get_kalastatic_config($yaml);
+      \Drupal::cache('discovery')->set($cid, $data);
+      $settings = $data['config'];
       break;
+  }
+
+  // Get the config as well, just in case it doesn't exist. The only way I see
+  // this happening is if the install borked but it happens.
+  if (!isset($data['config']) || empty($data['config'])) {
+    kalastatic_get_settings('config');
   }
 
   return $settings;
