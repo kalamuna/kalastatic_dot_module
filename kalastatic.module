@@ -234,3 +234,116 @@ function kalastatic_get_namespaces() {
   $settings = kalastatic_get_settings();
   return $settings['pluginOpts']['metalsmith-jstransformer']['engineOptions']['twig']['namespaces'];
 }
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function kalastatic_page_attachments_alter(array &$page) {
+  // Unset Drupals default favicon.
+  $links = $page['#attached']['html_head_link'];
+  foreach ($links as $key => $link) {
+    if ($link[0]['href'] == '/core/misc/favicon.ico') {
+      unset($page['#attached']['html_head_link'][$key]);
+    }
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function kalastatic_page_attachments(array &$attachments) {
+  // Pull the brand color from saved settings.
+  $config = \Drupal::config('kalastatic.settings');
+  $brand_color = $config->get('kalastatic_brand_color');
+
+  // Get kalastatic.yaml settings so we can find the images.
+  $settings = kalastatic_get_settings();
+  $dest = '/' . $settings['destination'];
+
+  // Set up tags for the favicons.
+  $apple_touch_icon = [
+    '#type' => 'html_tag',
+    '#tag' => 'link',
+    '#attributes' => [
+      'href' => $dest . '/images/favicon/apple-touch-icon.png',
+      'rel' => 'apple-touch-icon',
+      'sizes' => '180x180',
+    ],
+  ];
+  $attachments['#attached']['html_head'][] = [$apple_touch_icon, 'apple_touch_icon'];
+
+  $favicon_32x32 = [
+    '#type' => 'html_tag',
+    '#tag' => 'link',
+    '#attributes' => [
+      'href' => $dest . '/images/favicon/favicon-32x32.png',
+      'rel' => 'icon',
+      'sizes' => '32x32',
+      'type' => 'image/png',
+    ],
+  ];
+  $attachments['#attached']['html_head'][] = [$favicon_32x32, 'favicon_32x32'];
+
+  $favicon_16x16 = [
+    '#type' => 'html_tag',
+    '#tag' => 'link',
+    '#attributes' => [
+      'href' => $dest . '/images/favicon/favicon-16x16.png',
+      'rel' => 'icon',
+      'sizes' => '16x16',
+      'type' => 'image/png',
+    ],
+  ];
+  $attachments['#attached']['html_head'][] = [$favicon_16x16, 'favicon_16x16'];
+
+  $manifest = [
+    '#type' => 'html_tag',
+    '#tag' => 'link',
+    '#attributes' => [
+      'href' => $dest . '/images/favicon/manifest.json',
+      'rel' => 'manifest',
+    ],
+  ];
+  $attachments['#attached']['html_head'][] = [$manifest, 'manifest'];
+
+  $mask_icon = [
+    '#type' => 'html_tag',
+    '#tag' => 'link',
+    '#attributes' => [
+      'href' => $dest . '/images/favicon/safari-pinned-tab.svg',
+      'rel' => 'mask-icon',
+      'color' => $brand_color,
+    ],
+  ];
+  $attachments['#attached']['html_head'][] = [$mask_icon, 'mask-icon'];
+
+  $shortcut_icon = [
+    '#type' => 'html_tag',
+    '#tag' => 'link',
+    '#attributes' => [
+      'href' => $dest . '/images/favicon/favicon.ico',
+      'rel' => 'shortcut icon',
+    ],
+  ];
+  $attachments['#attached']['html_head'][] = [$shortcut_icon, 'shortcut icon'];
+
+  $msapplication_config = [
+    '#type' => 'html_tag',
+    '#tag' => 'meta',
+    '#attributes' => [
+      'href' => $dest . '/images/favicon/browserconfig.xml',
+      'name' => 'msapplication-config',
+    ],
+  ];
+  $attachments['#attached']['html_head'][] = [$msapplication_config, 'msapplication_config'];
+
+  $theme_color = [
+    '#type' => 'html_tag',
+    '#tag' => 'meta',
+    '#attributes' => [
+      'content' => $brand_color,
+      'name' => 'theme-color',
+    ],
+  ];
+  $attachments['#attached']['html_head'][] = [$theme_color, 'theme_color'];
+}
