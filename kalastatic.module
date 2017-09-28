@@ -104,8 +104,6 @@ function kalastatic_path_to_build_default() {
  *
  * @param string $type
  *   Which cache file to get.
- * @param bool $adjust_path_roots
- *   Should we adjust the paths to be Drupal relative.
  *
  * @return array
  *   An array of info from Kalastatic from the file requested.
