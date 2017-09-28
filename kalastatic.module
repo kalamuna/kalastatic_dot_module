@@ -9,6 +9,15 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Parser;
 
 /**
+ * Implements hook_preprocess().
+ */
+function kalastatic_preprocess(&$vars) {
+  // Add a global flag to indicate it is rendering in a Drupal context. This is
+  // needed for our templates to be shared between Drupal and Kalastatic.
+  $vars['drupal'] = TRUE;
+}
+
+/**
  * Implements hook_library_info_build().
  */
 function kalastatic_library_info_build() {
