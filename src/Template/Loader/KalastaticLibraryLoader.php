@@ -18,7 +18,6 @@ class KalastaticLibraryLoader extends \Twig_Loader_Filesystem {
    */
   public function __construct() {
     // Register the namespace paths.
-    $settings = kalastatic_get_settings();
     foreach (kalastatic_get_namespaces() as $namespace => $path) {
       $this->libraries[] = [
         'type' => 'module',
