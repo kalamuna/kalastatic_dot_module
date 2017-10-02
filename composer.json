@@ -21,9 +21,6 @@
     "source": "https://github.com/kalamuna/kalastatic_dot_module.git"
   },
   "require": {
-    "drupal/core": "^8.3",
-    "drupal/options": "^8.0",
-    "drupal/paragraphs": "^1.0",
-    "drupal/bricks": "^1.0"
+    "drupal/core": "^8.3"
   }
 }
