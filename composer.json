@@ -1,0 +1,25 @@
+{
+  "name": "kalamuna/kalastatic",
+  "type": "drupal-module",
+  "description": "Drupal integration module for the Kalastatic prototyping and styleguide tool",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "authors": [{
+    "name": "Josh \"Eaglelips Toughbear\" Walker",
+    "homepage": "https://www.drupal.org/u/sonictruth",
+    "role": "Maintainer"
+  }],
+  "repositories": [{
+    "type": "composer",
+    "url": "https://packages.drupal.org/8"
+  }],
+  "homepage": "https://github.com/kalamuna/kalastatic_dot_module",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://github.com/kalamuna/kalastatic_dot_module/issues",
+    "source": "https://github.com/kalamuna/kalastatic_dot_module.git"
+  },
+  "require": {
+    "drupal/core": "^8.3"
+  }
+}
