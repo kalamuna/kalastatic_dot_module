@@ -7,6 +7,7 @@
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Parser;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Implements hook_preprocess().
@@ -137,19 +138,28 @@ function kalastatic_get_settings(string $type = '') {
 function kalastatic_get_kalastatic_config($settings = []) {
   // Find Kalastatic's config.metadata file.
   $settings = empty($settings) ? kalastatic_get_settings() : $settings;
-  $finder = new Finder();
-  $iterator = $finder
-    ->name('config.metadata')
-    ->in($settings['source']);
-
-  // This file is markdown with yaml front matter so we need to massage it a bit
-  // to parse the yaml.
+  $source_dir = $settings['source'];
+  $fs = new Filesystem();
   $config = [];
-  foreach ($iterator as $file_path => $file) {
-    $yaml = new Parser();
-    $file_contents = file_get_contents($file_path);
-    $yaml_only = str_replace('---', '', $file_contents);
-    $config = $yaml->parse($yaml_only);
+
+  if ($fs->exists($settings['source'])) {
+    $finder = new Finder();
+    $iterator = $finder
+      ->name('config.metadata')
+      ->in($source_dir);
+
+    // This file is markdown with yaml front matter so we need to massage it a bit
+    // to parse the yaml.
+    foreach ($iterator as $file_path => $file) {
+      $yaml = new Parser();
+      $file_contents = file_get_contents($file_path);
+      $yaml_only = str_replace('---', '', $file_contents);
+      $config = $yaml->parse($yaml_only);
+    }
+  }
+  else {
+    // Log an error because the source directory doesn't exist.
+    \Drupal::logger('kalastatic')->error('Cannot find Kalastatic source directory. Looking in @dir', ['@dir' => $source_dir]);
   }
   return $config;
 }
