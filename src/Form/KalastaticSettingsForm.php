@@ -36,6 +36,12 @@ class KalastaticSettingsForm extends ConfigFormBase {
     $github_url = 'https://github.com/kalamuna/kalastatic';
     $github_link = Link::fromTextAndUrl($github_url, Url::fromUri($github_url))->toString();
 
+    // Check if we have a valid source and build path.
+    $source_error = t('Source path not set. Make sure kalastatic.yml exists and contains a \'source\' path that exists.');
+    $build_error = t('Build path not set. Make sure kalastatic.yml exists and contains a \'destination\' path that exists.');
+    $source_path = empty($settings['source']) ? $source_error : $settings['source'];
+    $build_path = empty($settings['destination']) ? $build_error : $settings['destination'];
+
     $form = [
       'description' => [
         '#markup' => '<p>' . t('Static site framework for building out prototypes and styleguides. See @link for more details.', ['@link' => $github_link]) . '</p>',
@@ -47,11 +53,11 @@ class KalastaticSettingsForm extends ConfigFormBase {
         '#collapsed' => FALSE,
         'kalastatic_src_path' => [
           '#prefix' => '<h3>' . $this->t('Source Path') . ':</h3>',
-          '#markup' => '<pre>' . $settings['source'] . '</pre>',
+          '#markup' => '<pre>' . $source_path . '</pre>',
         ],
         'kalastatic_build_path' => [
           '#prefix' => '<h3>' . $this->t('Build Path') . ':</h3>',
-          '#markup' => '<pre>' . $settings['destination'] . '</pre>',
+          '#markup' => '<pre>' . $build_path . '</pre>',
         ],
       ],
       'kalastatic_brand_color' => [
