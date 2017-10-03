@@ -39,8 +39,8 @@ class KalastaticSettingsForm extends ConfigFormBase {
     // Check if we have a valid source and build path.
     $source_error = t('Source path not set. Make sure kalastatic.yml exists and contains a \'source\' path that exists.');
     $build_error = t('Build path not set. Make sure kalastatic.yml exists and contains a \'destination\' path that exists.');
-    $source_path = empty($settings['source']) ? $source_error : $settings['source'];
-    $build_path = empty($settings['destination']) ? $build_error : $settings['destination'];
+    $source_path = empty($settings['yaml']['source']) ? $source_error : $settings['yaml']['source'];
+    $build_path = empty($settings['yaml']['destination']) ? $build_error : $settings['yaml']['destination'];
 
     $form = [
       'description' => [

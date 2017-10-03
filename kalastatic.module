@@ -141,7 +141,7 @@ function kalastatic_get_kalastatic_config($settings = []) {
   $source_dir = $settings['source'];
   $fs = new Filesystem();
   $config = [];
-  
+
   if ($fs->exists($settings['source'])) {
     $finder = new Finder();
     $iterator = $finder
@@ -161,7 +161,6 @@ function kalastatic_get_kalastatic_config($settings = []) {
     // Log an error because the source directory doesn't exist.
     \Drupal::logger('kalastatic')->error('Cannot find Kalastatic source directory. Looking in @dir', ['@dir' => $source_dir]);
   }
-    
   return $config;
 }
 
