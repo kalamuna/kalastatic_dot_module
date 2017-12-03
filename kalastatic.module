@@ -68,6 +68,14 @@ function kalastatic_library_info_build() {
 }
 
 /**
+ * Implements hook_page_attachments().
+ */
+function kalastatic_page_attachments(array &$attachments) {
+  // Attach library to page.
+  $attachments['#attached']['library'][] = 'kalastatic/css-js';
+}
+
+/**
  * Implements hook_rebuild().
  */
 function kalastatic_rebuild() {
