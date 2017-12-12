@@ -48,13 +48,8 @@ function kalastatic_library_info_build() {
 
   // Build and array of js file paths.
   $js = [];
-  foreach ($config['scripts']['footer'] as $js_path) {
-    // Don't pull in the special files we built to handle Drupal compatibility
-    // on the Kalastatic side.
-    $disallowed = strpos($js_path, 'drupal_pre') || strpos($js_path, 'drupal_post');
-    if (!$disallowed) {
-      $js[$build_path . '/' . $js_path] = [];
-    }
+  foreach ($config['scripts']['footer']['all'] as $js_path) {
+    $js[$build_path . '/' . $js_path] = [];
   }
 
   // Add the css and js to the library.
@@ -71,8 +66,16 @@ function kalastatic_library_info_build() {
  * Implements hook_page_attachments().
  */
 function kalastatic_page_attachments(array &$attachments) {
-  // Attach library to page.
-  $attachments['#attached']['library'][] = 'kalastatic/css-js';
+  // Get the module settings and the active theme.
+  $module_settings = \Drupal::config('kalastatic.settings');
+  $ks_themes = $module_settings->get('kalastatic_theme_list');
+  $active_theme = \Drupal::service('theme.manager')->getActiveTheme()->getName();
+
+  // Check if the active theme has been chosen.
+  if (in_array($active_theme, $ks_themes)) {
+    // Attach library to this page.
+    $attachments['#attached']['library'][] = 'kalastatic/css-js';
+  }
 }
 
 /**

@@ -42,6 +42,13 @@ class KalastaticSettingsForm extends ConfigFormBase {
     $source_path = empty($settings['yaml']['source']) ? $source_error : $settings['yaml']['source'];
     $build_path = empty($settings['yaml']['destination']) ? $build_error : $settings['yaml']['destination'];
 
+    // Get a list of all enabled themes.
+    $themes = system_list('theme');
+    $theme_list = [];
+    foreach ($themes as $mn => $theme) {
+      $theme_list[$mn] = $theme->info['name'];
+    }
+
     $form = [
       'description' => [
         '#markup' => '<p>' . t('Static site framework for building out prototypes and styleguides. See @link for more details.', ['@link' => $github_link]) . '</p>',
@@ -60,6 +67,13 @@ class KalastaticSettingsForm extends ConfigFormBase {
           '#markup' => '<pre>' . $build_path . '</pre>',
         ],
       ],
+      'kalastatic_theme_list' => [
+        '#type' => 'checkboxes',
+        '#title' => $this->t('Include Kalastatic assets for'),
+        '#options' => $theme_list,
+        '#default_value' => $config->get('kalastatic_theme_list'),
+        '#description' => $this->t('The CSS and Javascript output by Kalastatic will be included when any of the chosen themes are set as the default theme.'),
+      ],
       'kalastatic_brand_color' => [
         '#type' => 'textfield',
         '#title' => $this->t('Brand color'),
@@ -77,7 +91,9 @@ class KalastaticSettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = \Drupal::service('config.factory')->getEditable('kalastatic.settings');
-    $config->set('kalastatic_brand_color', $form_state->getValue('kalastatic_brand_color'))
+    $config
+      ->set('kalastatic_brand_color', $form_state->getValue('kalastatic_brand_color'))
+      ->set('kalastatic_theme_list', $form_state->getValue('kalastatic_theme_list'))
       ->save();
 
     parent::submitForm($form, $form_state);

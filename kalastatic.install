@@ -7,11 +7,18 @@ function kalastatic_install() {
   // Warm the settings cache.
   kalastatic_get_settings();
 
-  // Set default values for config.
+  // Get the config settings so we can set some defaults.
   $settings = \Drupal::configFactory()->getEditable('kalastatic.settings');
 
-  // Default colour to white.
+  // Get the default theme.
+  $default_theme = \Drupal::config('system.theme')->get('default');
+
+  // Default theme colour is white.
   $brand_color = '#fffff';
-  $settings->set('kalastatic_brand_color', $brand_color)
+
+  // Set the settings.
+  $settings
+    ->set('kalastatic_brand_color', $brand_color)
+    ->set('kalastatic_theme_list', [$default_theme])
     ->save();
 }
