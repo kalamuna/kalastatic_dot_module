@@ -70,7 +70,7 @@ function kalastatic_page_attachments(array &$attachments) {
   $module_settings = \Drupal::config('kalastatic.settings');
   $ks_themes = $module_settings->get('kalastatic_theme_list');
   $active_theme = \Drupal::service('theme.manager')->getActiveTheme()->getName();
-xdebug_break();
+
   // Go through the list of themes to see if we should add Kalastatic assets.
   foreach ($ks_themes as $name) {
     if (!empty($name) && $active_theme == $name) {
