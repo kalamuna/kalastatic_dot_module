@@ -71,12 +71,10 @@ function kalastatic_page_attachments(array &$attachments) {
   $ks_themes = $module_settings->get('kalastatic_theme_list');
   $active_theme = \Drupal::service('theme.manager')->getActiveTheme()->getName();
 
-  // Go through the list of themes to see if we should add Kalastatic assets.
-  foreach ($ks_themes as $name) {
-    if (!empty($name) && $active_theme == $name) {
-      // Attach library to this page.
-      $attachments['#attached']['library'][] = 'kalastatic/css-js';
-    }
+  // Check if the active theme has been chosen.
+  if (in_array($active_theme, $ks_themes)) {
+    // Attach library to this page.
+    $attachments['#attached']['library'][] = 'kalastatic/css-js';
   }
 }
 
