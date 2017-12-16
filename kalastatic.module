@@ -8,6 +8,7 @@
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Parser;
 use Symfony\Component\Filesystem\Filesystem;
+use Drupal\Core\Url;
 
 /**
  * Implements hook_preprocess().
@@ -70,6 +71,13 @@ function kalastatic_page_attachments(array &$attachments) {
   $module_settings = \Drupal::config('kalastatic.settings');
   $ks_themes = $module_settings->get('kalastatic_theme_list');
   $active_theme = \Drupal::service('theme.manager')->getActiveTheme()->getName();
+
+  if ($ks_themes == NULL) {
+    // Set a message and bail out if no themes have been chosen.
+    $settings_url = Url::fromRoute('kalastatic.settings');
+    drupal_set_message(t('Kalastatic requires you to choose the theme(s) you would like it to work with. Go to the <a href="@link">settings page.</a>', array('@link' => $settings_url->toString())), 'error');
+    return;
+  }
 
   // Check if the active theme has been chosen.
   if (in_array($active_theme, $ks_themes)) {
