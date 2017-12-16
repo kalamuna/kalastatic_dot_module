@@ -48,6 +48,7 @@ class KalastaticSettingsForm extends ConfigFormBase {
     foreach ($themes as $mn => $theme) {
       $theme_list[$mn] = $theme->info['name'];
     }
+    $theme_list_default = $config->get('kalastatic_theme_list') ?: [];
 
     $form = [
       'description' => [
@@ -71,7 +72,7 @@ class KalastaticSettingsForm extends ConfigFormBase {
         '#type' => 'checkboxes',
         '#title' => $this->t('Include Kalastatic assets for'),
         '#options' => $theme_list,
-        '#default_value' => $config->get('kalastatic_theme_list'),
+        '#default_value' => $theme_list_default,
         '#description' => $this->t('The CSS and Javascript output by Kalastatic will be included when any of the chosen themes are set as the default theme.'),
       ],
       'kalastatic_brand_color' => [
