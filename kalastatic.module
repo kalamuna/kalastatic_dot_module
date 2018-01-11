@@ -80,7 +80,7 @@ function kalastatic_page_attachments(array &$attachments) {
   }
 
   // Check if the active theme has been chosen.
-  if (in_array($active_theme, $ks_themes)) {
+  if (in_array($active_theme, $ks_themes) && $ks_themes[$active_theme]) {
     // Attach library to this page.
     $attachments['#attached']['library'][] = 'kalastatic/css-js';
   }
