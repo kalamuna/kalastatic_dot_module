@@ -237,6 +237,7 @@ function kalastatic_drupal_root_path($path) {
   $drupal_parent = end($root_args);
   $path_args = explode('/', $path);
   $prefix = reset($path_args);
+  $new_path = $path;
   if ($prefix == $drupal_parent) {
     // We add 1 to get rid of a preceding slash.
     $length = strlen($prefix) + 1;
