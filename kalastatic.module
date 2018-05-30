@@ -364,6 +364,7 @@ function kalastatic_twigshim_environment($twig) {
 
   // Let Twig know about the new global variables.
   $twig->addGlobal('static_asset_path', $asset_path);
+  $twig->addGlobal('drupal', TRUE);
 }
 
 /**
