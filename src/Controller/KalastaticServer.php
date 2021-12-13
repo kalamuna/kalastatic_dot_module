@@ -75,7 +75,7 @@ class KalastaticServer extends ControllerBase {
     elseif (file_exists($this->getBuildPath() . '/index.html')){
       // Kalastatic seems to exist but the page that was requested doesn't so
       // let's throw a Drupal 404.
-      drupal_set_message(t('The requested page could not be found inside Kalastatic'), 'error');
+      $this->messenger()->addError(t('The requested page could not be found inside Kalastatic'));
       throw new NotFoundHttpException();
     }
     elseif ((isset($args[1]) && $args[1] == 'prototype') || (isset($args[2]) && $args[2] == 'styleguide')) {
@@ -84,7 +84,7 @@ class KalastaticServer extends ControllerBase {
       $link_text = t('Kalastatic settings page');
       $replacements = array(
         '@path' => '\'' . $this->getFilePath() . '\'',
-        '@link' => $this->l($link_text, $link_path),
+        '@link' => Link::fromTextAndUrl($link_text, $link_path),
       );
       $page = array(
         '#markup' => '<h2>' . t('Kalastatic could not be found!') . '</h2><p>' . t("We were looking in @path but it wasn't there. If Kalastatic is living somewhere else you can set the location on the @link.", $replacements) . '</p>',

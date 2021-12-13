@@ -75,7 +75,7 @@ function kalastatic_page_attachments(array &$attachments) {
   if ($ks_themes == NULL) {
     // Set a message and bail out if no themes have been chosen.
     $settings_url = Url::fromRoute('kalastatic.settings');
-    drupal_set_message(t('Kalastatic requires you to choose the theme(s) you would like it to work with. Go to the <a href="@link">settings page.</a>', array('@link' => $settings_url->toString())), 'error');
+    \Drupal::messenger()->addError(t('Kalastatic requires you to choose the theme(s) you would like it to work with. Go to the <a href="@link">settings page.</a>', array('@link' => $settings_url->toString())));
     return;
   }
 
@@ -266,4 +266,3 @@ function kalastatic_page_attachments_alter(array &$page) {
     }
   }
 }
-
