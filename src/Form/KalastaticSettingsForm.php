@@ -43,7 +43,7 @@ class KalastaticSettingsForm extends ConfigFormBase {
     $build_path = empty($settings['yaml']['destination']) ? $build_error : $settings['yaml']['destination'];
 
     // Get a list of all enabled themes.
-    $themes = system_list('theme');
+    $themes = \Drupal::service('theme_handler')->listInfo();
     $theme_list = [];
     foreach ($themes as $mn => $theme) {
       $theme_list[$mn] = $theme->info['name'];

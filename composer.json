@@ -18,8 +18,5 @@
   "support": {
     "issues": "https://github.com/kalamuna/kalastatic_dot_module/issues",
     "source": "https://github.com/kalamuna/kalastatic_dot_module.git"
-  },
-  "require": {
-    "drupal/core": "^8.3"
   }
 }
